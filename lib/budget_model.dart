@@ -25,4 +25,14 @@ class BudgetModel {
       city: city ?? this.city,
     );
   }
+
+  @override
+  String toString() {
+    return 'BudgetModel(\n'
+        '  id: $id,\n'
+        '  date: $date,\n'
+        '  worksite: $worksite\n'
+        '  city: $city\n'
+        ')';
+  }
 }

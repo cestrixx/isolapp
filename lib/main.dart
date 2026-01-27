@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:isolapp/app_routes.dart';
+import 'package:isolapp/budget_repository.dart';
 import 'package:isolapp/in_memory_budget_repository.dart';
 import 'package:isolapp/isol_home_page.dart';
 
@@ -29,20 +31,23 @@ void main() async {
     city: 'Rio de Janeiro',
     date: DateTime(2025, 2, 28),
   );
-  runApp(const IsolApp());
+  runApp(IsolApp(repository: repository));
 }
 
 class IsolApp extends StatelessWidget {
-  const IsolApp({super.key});
-
+  const IsolApp({super.key, required this.repository});
+  final BudgetRepository repository;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: IsolHomePage(),
       debugShowCheckedModeBanner: false,
+      initialRoute: AppRoutes.home,
+      routes: {
+        AppRoutes.home: (context) => IsolHomePage(repository: repository),
+      },
     );
   }
 }

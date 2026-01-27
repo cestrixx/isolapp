@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:isolapp/app_routes.dart';
+import 'package:isolapp/budget_form_page.dart';
 import 'package:isolapp/budget_repository.dart';
 import 'package:isolapp/in_memory_budget_repository.dart';
 import 'package:isolapp/isol_home_page.dart';
@@ -47,6 +48,7 @@ class IsolApp extends StatelessWidget {
       initialRoute: AppRoutes.home,
       routes: {
         AppRoutes.home: (context) => IsolHomePage(repository: repository),
+        AppRoutes.budgetFormPage: (context) => BudgetFormPage(),
       },
     );
   }

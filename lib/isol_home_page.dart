@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:isolapp/app_routes.dart';
 import 'package:isolapp/budget_model.dart';
 import 'package:isolapp/budget_repository.dart';
 
@@ -40,7 +41,9 @@ class IsolHomePage extends StatelessWidget {
                     Text(DateFormat('d MMM y').format(budget.date)),
                   ]
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.budgetFormPage,); 
+                },
               );
             },
           );

@@ -1,55 +1,61 @@
 import 'package:flutter/material.dart';
-import 'package:isolapp/app_routes.dart';
-import 'package:isolapp/budget_form_page.dart';
-import 'package:isolapp/budget_repository.dart';
-import 'package:isolapp/in_memory_budget_repository.dart';
-import 'package:isolapp/isol_home_page.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:isolapp/models/budget_model.dart';
+import 'package:isolapp/models/item_model.dart';
+import 'package:isolapp/models/part_model.dart';
+import 'package:isolapp/pages/home_page.dart';
 
 void main() async {
-  final repository = InMemoryBudgetRepository();
-  repository.create(
-    worksite: 'Heineken',
-    city: 'Araraquara',
-    date: DateTime(2026, 1, 13),
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await Hive.initFlutter(); 
+  Hive.registerAdapter(VariableTypeAdapter());
+  Hive.registerAdapter(PartTypeAdapter());
+  Hive.registerAdapter(BudgetModelAdapter());
+  Hive.registerAdapter(ItemModelAdapter());
+  Hive.registerAdapter(PartModelAdapter());
+
+  final savedThemeMode = await AdaptiveTheme.getThemeMode();
+
+  runApp(
+    ProviderScope(
+      child: App(
+        savedThemeMode: savedThemeMode
+      )
+    )
   );
-  repository.create(
-    worksite: 'Petrobras Boaventura',
-    city: 'Rio de Janeiro',
-    date: DateTime(2025, 12, 20),
-  );
-  repository.create(
-    worksite: 'Petrobras Duque de Caxias',
-    city: 'Rio de Janeiro',
-    date: DateTime(2025, 9, 25),
-  );
-  repository.create(
-    worksite: 'Petrobras Alberto Pasqualini',
-    city: 'Rio de Janeiro',
-    date: DateTime(2025, 7, 13),
-  );
-  repository.create(
-    worksite: 'Petrobras Gabriel Passos',
-    city: 'Rio de Janeiro',
-    date: DateTime(2025, 2, 28),
-  );
-  runApp(IsolApp(repository: repository));
 }
 
-class IsolApp extends StatelessWidget {
-  const IsolApp({super.key, required this.repository});
-  final BudgetRepository repository;
+class App extends StatelessWidget {
+  final AdaptiveThemeMode? savedThemeMode;
+
+  const App({super.key, this.savedThemeMode});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    return AdaptiveTheme(
+      light: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        colorSchemeSeed: Colors.blue,
       ),
-      debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.home,
-      routes: {
-        AppRoutes.home: (context) => IsolHomePage(repository: repository),
-        AppRoutes.budgetFormPage: (context) => BudgetFormPage(),
-      },
+      dark: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorSchemeSeed: Colors.blue,
+      ),
+      initial: savedThemeMode ?? AdaptiveThemeMode.light,
+      // overrideMode: AdaptiveThemeMode.dark,
+      builder: (theme, darkTheme) => MaterialApp(
+        title: 'Tecnit',
+        theme: theme,
+        darkTheme: darkTheme,
+        home: const HomePage(),
+        debugShowCheckedModeBanner: false,
+      ),
+      debugShowFloatingThemeButton: false,
     );
   }
 }

@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -20,21 +24,44 @@ class BudgetDetailPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tecnit - Orçamento', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        title: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: ImageIcon(AssetImage('assets/icon/logo_tecnit_service.png'), size: 32,),
+            ),
+            const Text('Orçamento', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.file_download),
             tooltip: 'Exportar JSON',
             onPressed: () async {
               try {
-                await JsonService().exportBudget(budget);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Arquivo JSON gerado com sucesso!'),
-                  ),
-                );
+                if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+                  String? outputFile = await FilePicker.platform.saveFile(
+                    type: FileType.custom,
+                    allowedExtensions: ['json'],
+                    fileName: 'budget_${budget.id}.json',
+                  );
+
+                  if (outputFile != null) {
+                    final jsonString = jsonEncode(budget.toJson());
+                    final file = File(outputFile);
+                    await file.writeAsString(jsonString);
+                  }
+                }
+                else {
+                  await JsonService().exportBudget(budget);
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Arquivo JSON gerado com sucesso!'),),
+                  );
+                }
               } catch (e) {
                 ScaffoldMessenger.of(
+                  // ignore: use_build_context_synchronously
                   context,
                 ).showSnackBar(SnackBar(content: Text('Erro ao exportar: $e')));
               }

@@ -94,7 +94,15 @@ class _PartFormPageState extends State<PartFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tecnit - Peça', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        title: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: ImageIcon(AssetImage('assets/icon/logo_tecnit_service.png'), size: 32,),
+            ),
+            const Text('Peça', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+          ],
+        ),
         actions: [
           IconButton(icon: const Icon(Icons.save), onPressed: _save),
         ],

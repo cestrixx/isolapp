@@ -9,18 +9,20 @@ enum VariableType {
   @HiveField(2) degreescelsius,
   @HiveField(3) diameter,
   @HiveField(4) perimeter,
-  @HiveField(5) insulating,
-  @HiveField(6) linearmeter,
-  @HiveField(7) squaremeter,
-  @HiveField(8) side,
-  @HiveField(9) width,
-  @HiveField(10) height,
-  @HiveField(11) majordiameter,
-  @HiveField(12) minordiameter,
-  @HiveField(13) length,
-  @HiveField(14) weldbead,
-  @HiveField(15) extrados,
-  @HiveField(16) amount,
+  @HiveField(5) minorperimeter,
+  @HiveField(6) majorperimeter,
+  @HiveField(7) insulating,
+  @HiveField(8) linearmeter,
+  @HiveField(9) squaremeter,
+  @HiveField(10) side,
+  @HiveField(11) width,
+  @HiveField(12) height,
+  @HiveField(13) majordiameter,
+  @HiveField(14) minordiameter,
+  @HiveField(15) length,
+  @HiveField(16) weldbead,
+  @HiveField(17) extrados,
+  @HiveField(18) amount,
 }
 
 String variableTypeToString(VariableType variable) {
@@ -35,6 +37,10 @@ String variableTypeToString(VariableType variable) {
       return 'Diâmetro';
     case VariableType.perimeter:
       return 'Perímetro';
+    case VariableType.minorperimeter:
+      return 'Perímetro menor';
+    case VariableType.majorperimeter:
+      return 'Perímetro maior';
     case VariableType.insulating:
       return 'Isolante';
     case VariableType.linearmeter:
@@ -86,7 +92,10 @@ enum PartType {
   @HiveField(10) valvebox,
   @HiveField(11) insulationfinish,
   @HiveField(12) angleiron,
-  @HiveField(13) pipeshoe
+  @HiveField(13) pipeshoe,
+  @HiveField(14) backstay,
+  @HiveField(15) asianconicalheat,
+  @HiveField(16) squaretoround,
 }
 
 String partTypeToString(PartType type) {
@@ -94,31 +103,37 @@ String partTypeToString(PartType type) {
     case PartType.none:
       return 'Nenhum';
     case PartType.bend:
-      return 'Curva';
+      return 'Curva Raio Longo';
     case PartType.tee:
       return 'Boca T';
     case PartType.benddegree45:
       return 'Curva 45°';
     case PartType.conical:
-      return 'Cônico';
+      return 'Cone';
     case PartType.flange:
-      return 'Flange';
+      return 'Caixa de Flange';
     case PartType.cap:
       return 'Tampa';
     case PartType.cover:
       return 'Capa';
     case PartType.dishedhead:
-      return 'Cabeça abalada';
+      return 'Cabeça Abalada';
     case PartType.reducingcoupling:
-      return 'Luva de redução';
+      return 'Redução';
     case PartType.valvebox:
-      return 'Caixa de válvula';
+      return 'Caixa de Válvula';
     case PartType.insulationfinish:
-      return 'Acabamento de isolamento';
+      return 'Acabamento de Isolamento';
     case PartType.angleiron:
       return 'Cantoneira';
     case PartType.pipeshoe:
-      return 'Sapata de tubo';
+      return 'Sapata';
+    case PartType.backstay:
+      return 'Backstay(Ressalto no Corpo)';
+    case PartType.asianconicalheat:
+      return 'Chapeu Chines';
+    case PartType.squaretoround:
+      return 'Quadrado para Redondo';
   }
 }
 

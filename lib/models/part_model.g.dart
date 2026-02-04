@@ -64,28 +64,32 @@ class VariableTypeAdapter extends TypeAdapter<VariableType> {
       case 4:
         return VariableType.perimeter;
       case 5:
-        return VariableType.insulating;
+        return VariableType.minorperimeter;
       case 6:
-        return VariableType.linearmeter;
+        return VariableType.majorperimeter;
       case 7:
-        return VariableType.squaremeter;
+        return VariableType.insulating;
       case 8:
-        return VariableType.side;
+        return VariableType.linearmeter;
       case 9:
-        return VariableType.width;
+        return VariableType.squaremeter;
       case 10:
-        return VariableType.height;
+        return VariableType.side;
       case 11:
-        return VariableType.majordiameter;
+        return VariableType.width;
       case 12:
-        return VariableType.minordiameter;
+        return VariableType.height;
       case 13:
-        return VariableType.length;
+        return VariableType.majordiameter;
       case 14:
-        return VariableType.weldbead;
+        return VariableType.minordiameter;
       case 15:
-        return VariableType.extrados;
+        return VariableType.length;
       case 16:
+        return VariableType.weldbead;
+      case 17:
+        return VariableType.extrados;
+      case 18:
         return VariableType.amount;
       default:
         return VariableType.none;
@@ -110,41 +114,47 @@ class VariableTypeAdapter extends TypeAdapter<VariableType> {
       case VariableType.perimeter:
         writer.writeByte(4);
         break;
-      case VariableType.insulating:
+      case VariableType.minorperimeter:
         writer.writeByte(5);
         break;
-      case VariableType.linearmeter:
+      case VariableType.majorperimeter:
         writer.writeByte(6);
         break;
-      case VariableType.squaremeter:
+      case VariableType.insulating:
         writer.writeByte(7);
         break;
-      case VariableType.side:
+      case VariableType.linearmeter:
         writer.writeByte(8);
         break;
-      case VariableType.width:
+      case VariableType.squaremeter:
         writer.writeByte(9);
         break;
-      case VariableType.height:
+      case VariableType.side:
         writer.writeByte(10);
         break;
-      case VariableType.majordiameter:
+      case VariableType.width:
         writer.writeByte(11);
         break;
-      case VariableType.minordiameter:
+      case VariableType.height:
         writer.writeByte(12);
         break;
-      case VariableType.length:
+      case VariableType.majordiameter:
         writer.writeByte(13);
         break;
-      case VariableType.weldbead:
+      case VariableType.minordiameter:
         writer.writeByte(14);
         break;
-      case VariableType.extrados:
+      case VariableType.length:
         writer.writeByte(15);
         break;
-      case VariableType.amount:
+      case VariableType.weldbead:
         writer.writeByte(16);
+        break;
+      case VariableType.extrados:
+        writer.writeByte(17);
+        break;
+      case VariableType.amount:
+        writer.writeByte(18);
         break;
     }
   }
@@ -195,6 +205,12 @@ class PartTypeAdapter extends TypeAdapter<PartType> {
         return PartType.angleiron;
       case 13:
         return PartType.pipeshoe;
+      case 14:
+        return PartType.backstay;
+      case 15:
+        return PartType.asianconicalheat;
+      case 16:
+        return PartType.squaretoround;
       default:
         return PartType.none;
     }
@@ -244,6 +260,15 @@ class PartTypeAdapter extends TypeAdapter<PartType> {
         break;
       case PartType.pipeshoe:
         writer.writeByte(13);
+        break;
+      case PartType.backstay:
+        writer.writeByte(14);
+        break;
+      case PartType.asianconicalheat:
+        writer.writeByte(15);
+        break;
+      case PartType.squaretoround:
+        writer.writeByte(16);
         break;
     }
   }

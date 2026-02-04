@@ -77,6 +77,19 @@ class _PartFormPageState extends State<PartFormPage> {
         _variables[VariableType.width] = 0.0;
         _variables[VariableType.height] = 0.0;
         break;
+      case PartType.backstay:
+        _variables[VariableType.height] = 0.0;
+        _variables[VariableType.length] = 0.0;
+        break;
+      case PartType.asianconicalheat:
+        _variables[VariableType.weldbead] = 0.0;
+        _variables[VariableType.diameter] = 0.0;
+        break;
+      case PartType.squaretoround:
+        _variables[VariableType.majorperimeter] = 0.0;
+        _variables[VariableType.minorperimeter] = 0.0;
+        _variables[VariableType.length] = 0.0;
+        break;
     }
   }
 
@@ -285,6 +298,64 @@ class _PartFormPageState extends State<PartFormPage> {
                     decoration: InputDecoration(labelText: variableTypeToString(VariableType.height), border: const OutlineInputBorder()),
                     keyboardType: TextInputType.number,
                     onChanged: (v) => _variables[VariableType.height] = double.tryParse(v) ?? 0.0,
+                  ),
+                ],
+              ),
+              PartType.backstay => Column(
+                children: [
+                  TextFormField(
+                    initialValue: _variables[VariableType.height].toString(),
+                    decoration: InputDecoration(labelText: variableTypeToString(VariableType.height), border: const OutlineInputBorder()),
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) => _variables[VariableType.height] = double.tryParse(v) ?? 0.0,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    initialValue: _variables[VariableType.length].toString(),
+                    decoration: InputDecoration(labelText: variableTypeToString(VariableType.length), border: const OutlineInputBorder()),
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) => _variables[VariableType.length] = double.tryParse(v) ?? 0.0,
+                  ),
+                ],
+              ),
+              PartType.asianconicalheat => Column(
+                children: [
+                  TextFormField(
+                    initialValue: _variables[VariableType.weldbead].toString(),
+                    decoration: InputDecoration(labelText: variableTypeToString(VariableType.weldbead), border: const OutlineInputBorder()),
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) => _variables[VariableType.weldbead] = double.tryParse(v) ?? 0.0,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    initialValue: _variables[VariableType.diameter].toString(),
+                    decoration: InputDecoration(labelText: variableTypeToString(VariableType.diameter), border: const OutlineInputBorder()),
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) => _variables[VariableType.diameter] = double.tryParse(v) ?? 0.0,
+                  ),
+                ],
+              ),
+              PartType.squaretoround => Column(
+                children: [
+                  TextFormField(
+                    initialValue: _variables[VariableType.minorperimeter].toString(),
+                    decoration: InputDecoration(labelText: variableTypeToString(VariableType.minorperimeter), border: const OutlineInputBorder()),
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) => _variables[VariableType.minorperimeter] = double.tryParse(v) ?? 0.0,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    initialValue: _variables[VariableType.majorperimeter].toString(),
+                    decoration: InputDecoration(labelText: variableTypeToString(VariableType.majorperimeter), border: const OutlineInputBorder()),
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) => _variables[VariableType.majorperimeter] = double.tryParse(v) ?? 0.0,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    initialValue: _variables[VariableType.length].toString(),
+                    decoration: InputDecoration(labelText: variableTypeToString(VariableType.length), border: const OutlineInputBorder()),
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) => _variables[VariableType.length] = double.tryParse(v) ?? 0.0,
                   ),
                 ],
               ),

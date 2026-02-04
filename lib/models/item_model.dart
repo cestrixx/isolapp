@@ -20,7 +20,7 @@ class ItemModel extends HiveObject {
   @HiveField(6)
   double pressure;
   @HiveField(7)
-  double celsiusDegree;
+  double degreesCelsius;
   @HiveField(8)
   double diameter;
   @HiveField(9)
@@ -32,6 +32,8 @@ class ItemModel extends HiveObject {
   @HiveField(12)
   double squareMeter;
   @HiveField(13)
+  int multiplierFactor;
+  @HiveField(14)
   final List<PartModel> parts;
 
   ItemModel({
@@ -42,12 +44,13 @@ class ItemModel extends HiveObject {
     required this.description,
     required this.coating,
     this.pressure = 0.0,
-    this.celsiusDegree = 0.0,
+    this.degreesCelsius = 0.0,
     this.diameter = 0.0,
     this.perimeter = 0.0,
     this.insulating = '',
     this.linearMeter = 0.0,
     this.squareMeter = 0.0,
+    this.multiplierFactor = 1,
     List<PartModel>? parts,
   }) : this.parts = parts ?? [];
 
@@ -59,12 +62,13 @@ class ItemModel extends HiveObject {
         'description': description,
         'coating': coating,
         'pressure': pressure,
-        'celsiusDegree': celsiusDegree,
+        'degreesCelsius': degreesCelsius,
         'diameter': diameter,
         'perimeter': perimeter,
         'insulating': insulating,
         'linearMeter': linearMeter,
         'squareMeter': squareMeter,
+        'factorMultiplier': multiplierFactor,
         'parts': parts.map((e) => e.toJson()).toList(),
       };
 
@@ -76,12 +80,13 @@ class ItemModel extends HiveObject {
         description: json['description'],
         coating: json['coating'],
         pressure: (json['pressure'] as num).toDouble(),
-        celsiusDegree: (json['celsiusDegree'] as num).toDouble(),
+        degreesCelsius: (json['degreesCelsius'] as num).toDouble(),
         diameter: (json['diameter'] as num).toDouble(),
         perimeter: (json['perimeter'] as num).toDouble(),
         insulating: json['insulating'],
         linearMeter: (json['linearMeter'] as num).toDouble(),
         squareMeter: (json['squareMeter'] as num).toDouble(),
+        multiplierFactor: (json['factorMultiplier'] as num).toInt(),
         parts: (json['parts'] as List).map((e) => PartModel.fromJson(e)).toList(),
       );
 }

@@ -24,20 +24,21 @@ class ItemModelAdapter extends TypeAdapter<ItemModel> {
       description: fields[4] as String,
       coating: fields[5] as String,
       pressure: fields[6] as double,
-      celsiusDegree: fields[7] as double,
+      degreesCelsius: fields[7] as double,
       diameter: fields[8] as double,
       perimeter: fields[9] as double,
       insulating: fields[10] as String,
       linearMeter: fields[11] as double,
       squareMeter: fields[12] as double,
-      parts: (fields[13] as List?)?.cast<PartModel>(),
+      multiplierFactor: fields[13] as int,
+      parts: (fields[14] as List?)?.cast<PartModel>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, ItemModel obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -53,7 +54,7 @@ class ItemModelAdapter extends TypeAdapter<ItemModel> {
       ..writeByte(6)
       ..write(obj.pressure)
       ..writeByte(7)
-      ..write(obj.celsiusDegree)
+      ..write(obj.degreesCelsius)
       ..writeByte(8)
       ..write(obj.diameter)
       ..writeByte(9)
@@ -65,6 +66,8 @@ class ItemModelAdapter extends TypeAdapter<ItemModel> {
       ..writeByte(12)
       ..write(obj.squareMeter)
       ..writeByte(13)
+      ..write(obj.multiplierFactor)
+      ..writeByte(14)
       ..write(obj.parts);
   }
 

@@ -13,6 +13,7 @@ class PartFormPage extends StatefulWidget {
 class _PartFormPageState extends State<PartFormPage> {
   late PartType _selectedType;
   late int _amount;
+  late int _multiplierFactor;
   final Map<VariableType, dynamic> _variables = {};
 
   void _save() {
@@ -24,6 +25,7 @@ class _PartFormPageState extends State<PartFormPage> {
     final newPart = PartModel(
       type: _selectedType,
       amount: _amount,
+      multiplierFactor: _multiplierFactor,
       variables: _variables,
     );
     
@@ -98,6 +100,7 @@ class _PartFormPageState extends State<PartFormPage> {
     super.initState();
     _selectedType = widget.part?.type ?? PartType.none;
     _amount = widget.part?.amount ?? 1;
+    _multiplierFactor = widget.part?.multiplierFactor ?? 1;
     if (widget.part?.variables != null) {
       _variables.addAll(widget.part!.variables);
     }
@@ -141,6 +144,13 @@ class _PartFormPageState extends State<PartFormPage> {
               decoration: const InputDecoration(labelText: 'Quantidade', border: OutlineInputBorder()),
               keyboardType: TextInputType.number,
               onChanged: (v) => _amount = int.tryParse(v) ?? 1,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              initialValue: _multiplierFactor.toString(),
+              decoration: const InputDecoration(labelText: 'Fator Multiplicador', border: OutlineInputBorder()),
+              keyboardType: TextInputType.number,
+              onChanged: (v) => _multiplierFactor = int.tryParse(v) ?? 1,
             ),
             const SizedBox(height: 16),
             switch (_selectedType) {

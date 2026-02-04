@@ -23,12 +23,21 @@ enum VariableType {
   @HiveField(16) weldbead,
   @HiveField(17) extrados,
   @HiveField(18) amount,
+  @HiveField(19) multiplierFactor,
+  @HiveField(20) sector,
+  @HiveField(21) description,
+  @HiveField(22) coating,
+  @HiveField(23) parts,
 }
 
 String variableTypeToString(VariableType variable) {
   switch (variable) {
     case VariableType.none:
       return 'Nenhum';
+    case VariableType.sector:
+      return 'Setor';
+    case VariableType.description:
+      return 'Descrição';
     case VariableType.pressure:
       return 'Pressão';
     case VariableType.degreescelsius:
@@ -65,6 +74,12 @@ String variableTypeToString(VariableType variable) {
       return 'Costado';
     case VariableType.amount:
       return 'Quantidade';
+    case VariableType.multiplierFactor:
+      return 'Fator Multiplicador';
+    case VariableType.coating:
+      return 'Revestimento';
+    case VariableType.parts:
+      return 'Partes';
   }
 }
 
@@ -154,17 +169,21 @@ class PartModel extends HiveObject {
   @HiveField(1)
   final int amount;
   @HiveField(2)
+  int multiplierFactor;
+  @HiveField(3)
   final Map<VariableType, dynamic> variables;
 
   PartModel({
     this.type = PartType.none,
     this.amount = 1,
+    this.multiplierFactor = 1,
     Map<VariableType, dynamic>? variables,
   }) : this.variables = variables ?? {};
 
   Map<String, dynamic> toJson() => {
         'type': type.name,
         'amount': amount,
+        'multiplierFactor': multiplierFactor,
         'variables': variables.map((key, value) => MapEntry(key.name, value)),
       };
 
@@ -178,6 +197,7 @@ class PartModel extends HiveObject {
     return PartModel(
       type: PartType.values.firstWhere((e) => e.name == json['type']),
       amount: json['amount'],
+      multiplierFactor: json['multiplierFactor'],
       variables: Map<VariableType, dynamic>.from(vars),
     );
   }

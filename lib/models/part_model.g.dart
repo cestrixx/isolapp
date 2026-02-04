@@ -91,6 +91,16 @@ class VariableTypeAdapter extends TypeAdapter<VariableType> {
         return VariableType.extrados;
       case 18:
         return VariableType.amount;
+      case 19:
+        return VariableType.multiplierFactor;
+      case 20:
+        return VariableType.sector;
+      case 21:
+        return VariableType.description;
+      case 22:
+        return VariableType.coating;
+      case 23:
+        return VariableType.parts;
       default:
         return VariableType.none;
     }
@@ -155,6 +165,21 @@ class VariableTypeAdapter extends TypeAdapter<VariableType> {
         break;
       case VariableType.amount:
         writer.writeByte(18);
+        break;
+      case VariableType.multiplierFactor:
+        writer.writeByte(19);
+        break;
+      case VariableType.sector:
+        writer.writeByte(20);
+        break;
+      case VariableType.description:
+        writer.writeByte(21);
+        break;
+      case VariableType.coating:
+        writer.writeByte(22);
+        break;
+      case VariableType.parts:
+        writer.writeByte(23);
         break;
     }
   }

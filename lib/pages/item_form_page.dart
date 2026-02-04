@@ -30,6 +30,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
   late double _perimeter;
   late double _linearMeter;
   late double _squareMeter;
+  late int _multiplierFactor;
   late List<PartModel> _parts;
 
   @override
@@ -39,12 +40,13 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
     _descriptionController = TextEditingController(text: widget.item?.description ?? '');
     _coatingController = TextEditingController(text: widget.item?.coating ?? '');
     _pressure = widget.item?.pressure ?? 0.0;
-    _celsiusDegree = widget.item?.celsiusDegree ?? 0.0;
+    _celsiusDegree = widget.item?.degreesCelsius ?? 0.0;
     _diameter = widget.item?.diameter ?? 0.0;
     _perimeter = widget.item?.perimeter ?? 0.0;
     _insulatingController = TextEditingController(text: widget.item?.insulating ?? '');
     _linearMeter = widget.item?.linearMeter ?? 0.0;
     _squareMeter = widget.item?.squareMeter ?? 0.0;
+    _multiplierFactor = widget.item?.multiplierFactor ?? 1;
     _parts = widget.item?.parts != null ? List.from(widget.item!.parts) : [];
   }
 
@@ -58,12 +60,13 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
         description: _descriptionController.text,
         coating: _coatingController.text,
         pressure: _pressure,
-        celsiusDegree: _celsiusDegree,
+        degreesCelsius: _celsiusDegree,
         diameter: _diameter,
         perimeter: _perimeter,
         insulating: _insulatingController.text,
         linearMeter: _linearMeter,
         squareMeter: _squareMeter,
+        multiplierFactor: _multiplierFactor,
         parts: _parts,
       );
 
@@ -200,6 +203,13 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
                 ),
               ],
             ),
+            const SizedBox(height: 16),
+            TextFormField(
+              initialValue: _multiplierFactor.toString(),
+              decoration: const InputDecoration(labelText: 'Fator Multiplicador', border: OutlineInputBorder(),),
+              keyboardType: TextInputType.number,
+              onChanged: (v) => _multiplierFactor = int.tryParse(v) ?? 1,
+            ),
             const Divider(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -240,6 +250,19 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
     );
   }
 
+  void _updatePart(PartModel part, int index) async {
+    final result = await Navigator.push<PartModel>(
+      context,
+      MaterialPageRoute(builder: (context) => PartFormPage(part: part,)),
+    );
+    
+    if (result != null) {
+      setState(() {
+        _parts[index] = result;
+      });
+    }
+  }
+
   ListTile _buildPartTile(PartModel part, int index) {
     switch (part.type) {
       case PartType.tee:
@@ -250,8 +273,10 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Quantidade: ${part.amount}',),
+              Text('Fator Multiplicador: ${part.multiplierFactor.toString()}',),
             ],
           ),
+          onTap: () => _updatePart(part, index),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () => setState(() => _parts.removeAt(index)),
@@ -265,9 +290,11 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Quantidade: ${part.amount}',),
+              Text('Fator Multiplicador: ${part.multiplierFactor.toString()}',),
               Text('${variableTypeToString(VariableType.extrados)}: ${part.variables[VariableType.extrados].toString()}'),
             ],
           ),
+          onTap: () => _updatePart(part, index),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () => setState(() => _parts.removeAt(index)),
@@ -283,10 +310,12 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Quantidade: ${part.amount}',),
+              Text('Fator Multiplicador: ${part.multiplierFactor.toString()}',),
               Text('${variableTypeToString(VariableType.majordiameter)}: ${part.variables[VariableType.majordiameter].toString()}'),
               Text('${variableTypeToString(VariableType.minordiameter)}: ${part.variables[VariableType.minordiameter].toString()}'),
             ],
           ),
+          onTap: () => _updatePart(part, index),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () => setState(() => _parts.removeAt(index)),
@@ -299,9 +328,11 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Quantidade: ${part.amount}',),
+              Text('Fator Multiplicador: ${part.multiplierFactor.toString()}',),
               Text('${variableTypeToString(VariableType.weldbead)}: ${part.variables[VariableType.weldbead].toString()}'),
             ],
           ),
+          onTap: () => _updatePart(part, index),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () => setState(() => _parts.removeAt(index)),
@@ -317,10 +348,31 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Quantidade: ${part.amount}',),
+              Text('Fator Multiplicador: ${part.multiplierFactor.toString()}',),
               Text('${variableTypeToString(VariableType.width)}: ${part.variables[VariableType.width].toString()}'),
               Text('${variableTypeToString(VariableType.height)}: ${part.variables[VariableType.height].toString()}'),
             ],
           ),
+          onTap: () => _updatePart(part, index),
+          trailing: IconButton(
+            icon: const Icon(Icons.delete, color: Colors.red),
+            onPressed: () => setState(() => _parts.removeAt(index)),
+          ),
+        );
+      case PartType.squaretoround:
+        return ListTile(
+          title: Text('Tipo: ${partTypeToString(part.type).toUpperCase()}'),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Quantidade: ${part.amount}',),
+              Text('Fator Multiplicador: ${part.multiplierFactor.toString()}',),
+              Text('${variableTypeToString(VariableType.minorperimeter)}: ${part.variables[VariableType.minorperimeter].toString()}'),
+              Text('${variableTypeToString(VariableType.majorperimeter)}: ${part.variables[VariableType.majorperimeter].toString()}'),
+              Text('${variableTypeToString(VariableType.length)}: ${part.variables[VariableType.length].toString()}'),
+            ],
+          ),
+          onTap: () => _updatePart(part, index),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () => setState(() => _parts.removeAt(index)),

@@ -135,25 +135,27 @@ class HomePage extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Novo Orçamento'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: worksiteController,
-              decoration: const InputDecoration(
-                labelText: 'Obra',
-                border: OutlineInputBorder(),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: worksiteController,
+                decoration: const InputDecoration(
+                  labelText: 'Obra',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: cityController,
-              decoration: const InputDecoration(
-                labelText: 'Cidade',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              TextField(
+                controller: cityController,
+                decoration: const InputDecoration(
+                  labelText: 'Cidade',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           TextButton(

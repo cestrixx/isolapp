@@ -2,7 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:isolapp/models/budget_model.dart';
 
 class BudgetRepository {
-  static const String boxName = 'budgets';
+  static const String boxName = 'budgets2';
 
   Future<void> init() async {
     if (!Hive.isBoxOpen(boxName)) {

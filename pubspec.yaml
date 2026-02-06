@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.1+1
 
 environment:
   sdk: ^3.10.7
@@ -62,23 +62,24 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  inno_bundle: ^0.11.2
 
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icon/logo_tecnit_service.png"
+  image_path: "assets/logo_tecnit_service.png"
   web:
     generate: true
-    image_path: "assets/icon/logo_tecnit_service.png"
+    image_path: "assets/logo_tecnit_service.png"
     background_color: "#ffffff"
     theme_color: "#ffffff"
   windows:
     generate: true
-    image_path: "assets/icon/logo_tecnit_service.png"
+    image_path: "assets/logo_tecnit_service.png"
     icon_size: 256
   macos:
     generate: true
-    image_path: "assets/icon/logo_tecnit_service.png"
+    image_path: "assets/logo_tecnit_service.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -97,7 +98,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
 
   assets:
-    - assets/icon/logo_tecnit_service.png
+    - assets/logo_tecnit_service.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -124,3 +125,19 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+inno_bundle:
+  id: fc19c400-0375-11f1-86a2-6dda367f25b9
+  app_name: Isolapp
+  publisher: Carlos Eduardo de Souza
+  publisher_url: https://tecnit.com.br/
+  version: 1.0.1+1
+  output_dir: build/installer
+  icon_path: assets/app_icon.ico
+  languages:
+    - brazilianportuguese
+  tasks:
+    desktop_icon: true
+    quick_launch: false
+  # Mais opções: vc_redist (true/false), compression (lzma2/ultra64 etc.)
+  vc_redist: true

@@ -94,7 +94,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
           children: [
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              child: ImageIcon(AssetImage('assets/icon/logo_tecnit_service.png'), size: 32,),
+              child: ImageIcon(AssetImage('assets/logo_tecnit_service.png'), size: 32,),
             ),
             const Text('Item', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
           ],
@@ -103,7 +103,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
         // title: Text('Tecnit - Item', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         // leading: Padding(
         //   padding: const EdgeInsets.all(8.0),
-        //   child: Image.asset('assets/icon/logo_tecnit_service.png'),
+        //   child: Image.asset('assets/logo_tecnit_service.png'),
         // ),
         actions: [
           IconButton(icon: const Icon(Icons.save), onPressed: _saveItem),

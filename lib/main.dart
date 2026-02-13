@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:flutter/widget_previews.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isolapp/models/budget_model.dart';
@@ -25,6 +26,16 @@ void main() async {
         savedThemeMode: savedThemeMode
       )
     )
+  );
+}
+
+@Preview(
+  name: 'App'
+)
+
+Widget previewApp() {
+  return ProviderScope(
+    child: App(),
   );
 }
 

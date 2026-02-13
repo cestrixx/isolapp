@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isolapp/models/budget_model.dart';
 import 'package:isolapp/models/item_model.dart';
@@ -7,6 +8,26 @@ import 'package:isolapp/models/part_model.dart';
 import 'package:isolapp/pages/part_form_page.dart';
 import 'package:isolapp/services/budget_service.dart';
 import 'package:uuid/uuid.dart';
+
+@Preview(
+  name: 'Item Form',
+)
+
+Widget preview() {
+  final budget = BudgetModel(
+    id: const Uuid().v4(),
+    date: DateTime.now(),
+    worksite: 'Orçamento Exemplo',
+    city: 'Matão',
+    items: [],
+  );
+
+  return ProviderScope(
+    child: MaterialApp(
+      home: ItemFormPage(budget: budget),
+    ),
+  );
+}
 
 class ItemFormPage extends ConsumerStatefulWidget {
   final BudgetModel budget;

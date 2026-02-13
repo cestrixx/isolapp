@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:isolapp/models/budget_model.dart';
@@ -11,7 +12,20 @@ import 'package:isolapp/services/budget_service.dart';
 import 'package:isolapp/services/json_service.dart';
 import 'package:uuid/uuid.dart';
 
+
 enum Menu { theme, import }
+
+@Preview(
+  name: 'HomePage'
+)
+
+Widget preview() {
+  return ProviderScope(
+    child: MaterialApp(
+      home: HomePage(),
+    ),
+  );
+}
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});

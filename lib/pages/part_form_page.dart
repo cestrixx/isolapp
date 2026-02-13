@@ -1,5 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widget_previews.dart';
 import 'package:isolapp/models/part_model.dart';
+
+@Preview(
+  name: 'PartFormPage',
+)
+
+Widget preview() {
+  return MaterialApp(
+    home: PartFormPage(part: PartModel(
+      type: PartType.bend,
+      amount: 2,
+      multiplierFactor: 3,
+      variables: {
+        VariableType.extrados: 10.0,
+      },
+    )),
+  );
+}
 
 class PartFormPage extends StatefulWidget {
   final PartModel? part;

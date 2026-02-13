@@ -3,11 +3,24 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:isolapp/pages/item_form_page.dart';
 import 'package:isolapp/services/budget_service.dart';
 import 'package:isolapp/services/json_service.dart';
+
+@Preview(
+  name: 'BudgetDetailPage',
+)
+
+Widget preview() {
+  return ProviderScope(
+    child: const MaterialApp(
+      home: BudgetDetailPage(),
+    ),
+  );
+}
 
 class BudgetDetailPage extends ConsumerWidget {
   const BudgetDetailPage({super.key});

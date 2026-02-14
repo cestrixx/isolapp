@@ -20,23 +20,13 @@ void main() async {
 
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
 
-  runApp(
-    ProviderScope(
-      child: App(
-        savedThemeMode: savedThemeMode
-      )
-    )
-  );
+  runApp(ProviderScope(child: App(savedThemeMode: savedThemeMode)));
 }
 
-@Preview(
-  name: 'App'
-)
+@Preview(name: 'App')
 
 Widget previewApp() {
-  return ProviderScope(
-    child: App(),
-  );
+  return ProviderScope(child: App());
 }
 
 class App extends StatelessWidget {
@@ -47,16 +37,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AdaptiveTheme(
-      light: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.light,
-        colorSchemeSeed: Colors.blue,
-      ),
-      dark: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        colorSchemeSeed: Colors.blue,
-      ),
+      light: ThemeData(useMaterial3: true, brightness: Brightness.light, colorSchemeSeed: Colors.blue),
+      dark: ThemeData(useMaterial3: true, brightness: Brightness.dark, colorSchemeSeed: Colors.blue),
       initial: savedThemeMode ?? AdaptiveThemeMode.light,
       // overrideMode: AdaptiveThemeMode.dark,
       builder: (theme, darkTheme) => MaterialApp(

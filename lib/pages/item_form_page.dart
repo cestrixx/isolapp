@@ -115,9 +115,9 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
           children: [
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              child: ImageIcon(AssetImage('assets/logo_tecnit_service.png'), size: 32,),
+              child: ImageIcon(AssetImage('assets/logo_tecnit_service.png'), size: 32),
             ),
-            const Text('Item', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+            const Text('Item', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           ],
         ),
 
@@ -227,7 +227,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             const SizedBox(height: 16),
             TextFormField(
               initialValue: _multiplierFactor.toString(),
-              decoration: const InputDecoration(labelText: 'Fator Multiplicador', border: OutlineInputBorder(),),
+              decoration: const InputDecoration(labelText: 'Fator Multiplicador', border: OutlineInputBorder()),
               keyboardType: TextInputType.number,
               onChanged: (v) => _multiplierFactor = int.tryParse(v) ?? 1,
             ),
@@ -239,10 +239,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
                 const Spacer(),
                 ElevatedButton(
                   onPressed: () async {
-                    final result = await Navigator.push<PartModel>(
-                      context,
-                      MaterialPageRoute(builder: (context) => const PartFormPage()),
-                    );
+                    final result = await Navigator.push<PartModel>(context, MaterialPageRoute(builder: (context) => const PartFormPage()));
                     if (result != null) {
                       setState(() => _parts.add(result));
                     }
@@ -260,9 +257,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
                     itemCount: _parts.length,
                     itemBuilder: (context, index) {
                       final part = _parts[index];
-                      return Card(
-                        child: _buildPartTile(part, index)
-                      );
+                      return Card(child: _buildPartTile(part, index));
                     },
                   ),
           ],
@@ -272,11 +267,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
   }
 
   void _updatePart(PartModel part, int index) async {
-    final result = await Navigator.push<PartModel>(
-      context,
-      MaterialPageRoute(builder: (context) => PartFormPage(part: part,)),
-    );
-    
+    final result = await Navigator.push<PartModel>(context, MaterialPageRoute(builder: (context) => PartFormPage(part: part)));
     if (result != null) {
       setState(() {
         _parts[index] = result;

@@ -21,9 +21,7 @@ Widget preview() {
 
 class PartFormPage extends StatefulWidget {
   final PartModel? part;
- 
   const PartFormPage({super.key, this.part});
-
   @override
   State<PartFormPage> createState() => _PartFormPageState();
 }

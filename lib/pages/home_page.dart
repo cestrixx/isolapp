@@ -96,14 +96,7 @@ class HomePage extends ConsumerWidget {
                     ),
                     onTap: () {
                       ref.read(selectedBudgetService.notifier).state = budget;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return BudgetDetailPage();
-                          },
-                        ),
-                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => BudgetDetailPage()));
                     },
                   );
                 },
@@ -118,10 +111,7 @@ class HomePage extends ConsumerWidget {
 
   Future<void> _importBudget(BuildContext context, WidgetRef ref) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['json'],
-      );
+      FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['json']);
 
       if (result != null) {
         final file = File(result.files.single.path!);
@@ -130,14 +120,14 @@ class HomePage extends ConsumerWidget {
 
         await ref.read(budgetsService.notifier).addBudget(importedBudget);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Orçamento importado com sucesso!')),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Orçamento importado com sucesso!')));
+        }
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Erro ao importar: $e')));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao importar: $e')));
+      }
     }
   }
 
@@ -155,18 +145,12 @@ class HomePage extends ConsumerWidget {
             children: [
               TextField(
                 controller: worksiteController,
-                decoration: const InputDecoration(
-                  labelText: 'Obra',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(labelText: 'Obra', border: OutlineInputBorder()),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: cityController,
-                decoration: const InputDecoration(
-                  labelText: 'Cidade',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(labelText: 'Cidade', border: OutlineInputBorder()),
               ),
             ],
           ),

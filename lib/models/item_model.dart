@@ -52,7 +52,11 @@ class ItemModel extends HiveObject {
     this.squareMeter = 0.0,
     this.multiplierFactor = 1,
     List<PartModel>? parts,
-  }) : this.parts = parts ?? [];
+  }) : parts = parts ?? [] {
+    assert(pressure >= 0, 'Pressão não pode ser negativa');
+    assert(diameter >= 0, 'Diâmetro não pode ser negativo');
+    assert(multiplierFactor > 0, 'Fator multiplicador deve ser maior que 0');
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -68,11 +72,13 @@ class ItemModel extends HiveObject {
         'insulating': insulating,
         'linearMeter': linearMeter,
         'squareMeter': squareMeter,
-        'factorMultiplier': multiplierFactor,
+        'multiplierFactor': multiplierFactor,
         'parts': parts.map((e) => e.toJson()).toList(),
       };
 
-  factory ItemModel.fromJson(Map<String, dynamic> json) => ItemModel(
+  factory ItemModel.fromJson(Map<String, dynamic> json) {
+    try {
+      return ItemModel(
         id: json['id'],
         budgetId: json['budgetId'],
         index: json['index'],
@@ -86,7 +92,47 @@ class ItemModel extends HiveObject {
         insulating: json['insulating'],
         linearMeter: (json['linearMeter'] as num).toDouble(),
         squareMeter: (json['squareMeter'] as num).toDouble(),
-        multiplierFactor: (json['factorMultiplier'] as num).toInt(),
+        multiplierFactor: (json['multiplierFactor'] as num).toInt(),
         parts: (json['parts'] as List).map((e) => PartModel.fromJson(e)).toList(),
       );
+    } catch (e) {
+      throw FormatException('Erro ao desserializar ItemModel: $e');
+    }
+  }
+
+  ItemModel copyWith({
+    String? id,
+    String? budgetId,
+    int? index,
+    String? sector,
+    String? description,
+    String? coating,
+    double? pressure,
+    double? degreesCelsius,
+    double? diameter,
+    double? perimeter,
+    String? insulating,
+    double? linearMeter,
+    double? squareMeter,
+    int? multiplierFactor,
+    List<PartModel>? parts,
+  }) {
+    return ItemModel(
+      id: id ?? this.id,
+      budgetId: budgetId ?? this.budgetId,
+      index: index ?? this.index,
+      sector: sector ?? this.sector,
+      description: description ?? this.description,
+      coating: coating ?? this.coating,
+      pressure: pressure ?? this.pressure,
+      degreesCelsius: degreesCelsius ?? this.degreesCelsius,
+      diameter: diameter ?? this.diameter,
+      perimeter: perimeter ?? this.perimeter,
+      insulating: insulating ?? this.insulating,
+      linearMeter: linearMeter ?? this.linearMeter,
+      squareMeter: squareMeter ?? this.squareMeter,
+      multiplierFactor: multiplierFactor ?? this.multiplierFactor,
+      parts: parts ?? List.from(this.parts),
+    );
+  }
 }

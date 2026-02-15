@@ -169,7 +169,7 @@ class PartModel extends HiveObject {
   @HiveField(1)
   final int amount;
   @HiveField(2)
-  int multiplierFactor;
+  final int multiplierFactor;
   @HiveField(3)
   final Map<VariableType, dynamic> variables;
 
@@ -178,7 +178,9 @@ class PartModel extends HiveObject {
     this.amount = 1,
     this.multiplierFactor = 1,
     Map<VariableType, dynamic>? variables,
-  }) : this.variables = variables ?? {};
+  }) : assert(amount > 0, 'Amount must be positive'),
+       assert(multiplierFactor > 0, 'Multiplier factor must be positive'),
+       variables = variables ?? {};
 
   Map<String, dynamic> toJson() => {
         'type': type.name,
@@ -188,17 +190,35 @@ class PartModel extends HiveObject {
       };
 
   factory PartModel.fromJson(Map<String, dynamic> json) {
-    final vars = (json['variables'] as Map).map(
-      (key, value) => MapEntry(
-        VariableType.values.firstWhere((e) => e.name == key),
-        value,
-      ),
-    );
+    try {
+      final vars = (json['variables'] as Map? ?? {}).map(
+        (key, value) => MapEntry(
+          VariableType.values.firstWhere((e) => e.name == key, orElse: () => VariableType.none),
+          value,
+        ),
+      );
+      return PartModel(
+        type: PartType.values.firstWhere((e) => e.name == json['type'], orElse: () => PartType.none),
+        amount: json['amount'] ?? 1,
+        multiplierFactor: json['multiplierFactor'] ?? 1,
+        variables: Map<VariableType, dynamic>.from(vars),
+      );
+    } catch (e) {
+      throw FormatException('Invalid PartModel JSON: $e');
+    }
+  }
+
+  PartModel copyWith({
+    PartType? type,
+    int? amount,
+    int? multiplierFactor,
+    Map<VariableType, dynamic>? variables,
+  }) {
     return PartModel(
-      type: PartType.values.firstWhere((e) => e.name == json['type']),
-      amount: json['amount'],
-      multiplierFactor: json['multiplierFactor'],
-      variables: Map<VariableType, dynamic>.from(vars),
+      type: type ?? this.type,
+      amount: amount ?? this.amount,
+      multiplierFactor: multiplierFactor ?? this.multiplierFactor,
+      variables: variables ?? Map.from(this.variables),
     );
   }
 }

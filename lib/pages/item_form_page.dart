@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:isolapp/components/decimal_text_input_formatter.dart';
+import 'package:isolapp/components/integer_text_input_formatter.dart';
 import 'package:isolapp/models/budget_model.dart';
 import 'package:isolapp/models/item_model.dart';
 import 'package:isolapp/models/part_model.dart';
@@ -159,6 +161,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
                   child: TextFormField(
                     initialValue: _pressure.toString(),
                     decoration: const InputDecoration(labelText: 'Pressão', border: OutlineInputBorder()),
+                    inputFormatters: [DecimalTextInputFormatter()],
                     keyboardType: TextInputType.number,
                     onChanged: (v) => _pressure = double.tryParse(v) ?? 0.0,
                   ),
@@ -168,6 +171,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
                   child: TextFormField(
                     initialValue: _celsiusDegree.toString(),
                     decoration: const InputDecoration(labelText: 'Temperatura (°C)', border: OutlineInputBorder()),
+                    inputFormatters: [DecimalTextInputFormatter()],
                     keyboardType: TextInputType.number,
                     onChanged: (v) => _celsiusDegree = double.tryParse(v) ?? 0.0,
                   ),
@@ -180,7 +184,8 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
                 Expanded(
                   child: TextFormField(
                     initialValue: _diameter.toString(),
-                    decoration: const InputDecoration(labelText: 'Diâmetro', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(labelText: 'Diâmetro (Ø)', border: OutlineInputBorder()),
+                    inputFormatters: [DecimalTextInputFormatter()],
                     keyboardType: TextInputType.number,
                     onChanged: (v) => _diameter = double.tryParse(v) ?? 0.0,
                   ),
@@ -190,6 +195,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
                   child: TextFormField(
                     initialValue: _perimeter.toString(),
                     decoration: const InputDecoration(labelText: 'Perímetro', border: OutlineInputBorder()),
+                    inputFormatters: [DecimalTextInputFormatter()],
                     keyboardType: TextInputType.number,
                     onChanged: (v) => _perimeter = double.tryParse(v) ?? 0.0,
                   ),
@@ -209,6 +215,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
                   child: TextFormField(
                     initialValue: _linearMeter.toString(),
                     decoration: const InputDecoration(labelText: 'Metro Linear', border: OutlineInputBorder()),
+                    inputFormatters: [DecimalTextInputFormatter()],
                     keyboardType: TextInputType.number,
                     onChanged: (v) => _linearMeter = double.tryParse(v) ?? 0.0,
                   ),
@@ -218,6 +225,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
                   child: TextFormField(
                     initialValue: _squareMeter.toString(),
                     decoration: const InputDecoration(labelText: 'Metro Quadrado', border: OutlineInputBorder()),
+                    inputFormatters: [DecimalTextInputFormatter()],
                     keyboardType: TextInputType.number,
                     onChanged: (v) => _squareMeter = double.tryParse(v) ?? 0.0,
                   ),
@@ -227,7 +235,8 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             const SizedBox(height: 16),
             TextFormField(
               initialValue: _multiplierFactor.toString(),
-              decoration: const InputDecoration(labelText: 'Fator Multiplicador', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: 'Fator Multiplicador (X)', border: OutlineInputBorder()),
+              inputFormatters: [IntegerTextInputFormatter()],
               keyboardType: TextInputType.number,
               onChanged: (v) => _multiplierFactor = int.tryParse(v) ?? 1,
             ),

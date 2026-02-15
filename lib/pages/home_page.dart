@@ -134,7 +134,6 @@ class HomePage extends ConsumerWidget {
   void _showAddBudgetDialog(BuildContext context, WidgetRef ref) {
     final worksiteController = TextEditingController();
     final cityController = TextEditingController();
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -162,13 +161,7 @@ class HomePage extends ConsumerWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              final newBudget = BudgetModel(
-                id: const Uuid().v4(),
-                date: DateTime.now(),
-                worksite: worksiteController.text,
-                city: cityController.text,
-              );
-              ref.read(budgetsService.notifier).addBudget(newBudget);
+              ref.read(budgetsService.notifier).addBudget(BudgetModel(id: const Uuid().v4(), date: DateTime.now(), worksite: worksiteController.text, city: cityController.text));
               Navigator.pop(context);
             },
             child: const Text('Salvar'),

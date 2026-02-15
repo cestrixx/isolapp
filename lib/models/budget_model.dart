@@ -16,13 +16,16 @@ class BudgetModel extends HiveObject {
   @HiveField(4)
   final List<ItemModel> items;
 
-  BudgetModel({
+BudgetModel({
     required this.id,
     required this.date,
     required this.worksite,
     required this.city,
     List<ItemModel>? items,
-  }) : this.items = items ?? [];
+  }) : assert(id.isNotEmpty, 'ID não pode estar vazio'),
+       assert(worksite.isNotEmpty, 'Worksite não pode estar vazio'),
+       assert(city.isNotEmpty, 'Cidade não pode estar vazia'),
+       items = items ?? [];
 
   BudgetModel copyWith({
     String? id,
@@ -48,11 +51,20 @@ class BudgetModel extends HiveObject {
         'items': items.map((e) => e.toJson()).toList(),
       };
 
-  factory BudgetModel.fromJson(Map<String, dynamic> json) => BudgetModel(
-        id: json['id'],
-        date: DateTime.parse(json['date']),
-        worksite: json['worksite'],
-        city: json['city'],
-        items: (json['items'] as List).map((e) => ItemModel.fromJson(e)).toList(),
+  factory BudgetModel.fromJson(Map<String, dynamic> json) {
+    try {
+      return BudgetModel(
+        id: json['id'] ?? '',
+        date: DateTime.parse(json['date'] ?? DateTime.now().toIso8601String()),
+        worksite: json['worksite'] ?? '',
+        city: json['city'] ?? '',
+        items: (json['items'] as List?) ?.map((e) => ItemModel.fromJson(e)).toList() ?? [],
       );
+    } catch (e) {
+      throw FormatException('Erro ao parsear BudgetModel: $e');
+    }
+  }
+
+  @override
+  String toString() => 'BudgetModel(id: $id, date: $date, worksite: $worksite, city: $city, items: ${items.length})';      
 }

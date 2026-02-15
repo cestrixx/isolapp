@@ -39,38 +39,36 @@ class BudgetPage extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              child: ImageIcon(AssetImage('assets/logo_tecnit_service.png'), size: 32,),
+              child: ImageIcon(AssetImage('assets/logo_tecnit_service.png'), size: 32),
             ),
-            const Text('Orçamentos', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+            const Text('Orçamentos', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           ],
         ),
-        // leading: Padding(
-        //   padding: const EdgeInsets.all(8.0),
-        //   child: Image.asset('assets/logo_tecnit_service.png'),
-        // ),
         actions: [
           PopupMenuButton<Menu>(
+            onSelected: (Menu item) {
+              switch (item) {
+                case Menu.import:
+                  _importBudget(context, ref);
+                  break;
+                case Menu.theme:
+                  _toggleTheme(context);
+                  break;
+              }
+            },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
               PopupMenuItem<Menu>(
-                value: Menu.theme,
-                child: ListTile(
-                  leading: const Icon(Icons.file_upload),
-                  title: const Text('Importar Orçamento'),
-                  onTap: () => _importBudget(context, ref),
+                value: Menu.import,
+                child: const ListTile(
+                  leading: Icon(Icons.file_upload),
+                  title: Text('Importar Orçamento'),
                 ),
               ),
               PopupMenuItem<Menu>(
                 value: Menu.theme,
-                child: ListTile(
-                  leading: const Icon(Icons.published_with_changes),
-                  title: const Text('Trocar tema'),
-                  onTap: () {
-                    if (AdaptiveTheme.of(context).mode.isLight) {
-                      AdaptiveTheme.of(context).setDark();
-                    } else {
-                      AdaptiveTheme.of(context).setLight();
-                    }
-                  },
+                child: const ListTile(
+                  leading: Icon(Icons.published_with_changes),
+                  title: Text('Trocar tema'),
                 ),
               ),
             ],
@@ -87,12 +85,10 @@ class BudgetPage extends ConsumerWidget {
                   final budget = budgets[index];
                   return ListTile(
                     title: Text(budget.worksite, style: const TextStyle(fontSize: 18)),
-                    subtitle: Text('${budget.city} - ${DateFormat('d MMM y').format(budget.date)}',),
+                    subtitle: Text('${budget.city} - ${DateFormat('d MMM y').format(budget.date)}'),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => ref
-                          .read(budgetsService.notifier)
-                          .deleteBudget(budget.id),
+                      onPressed: () => ref.read(budgetsService.notifier).deleteBudget(budget.id),
                     ),
                     onTap: () {
                       ref.read(selectedBudgetService.notifier).state = budget;
@@ -109,6 +105,14 @@ class BudgetPage extends ConsumerWidget {
     );
   }
 
+  void _toggleTheme(BuildContext context) {
+    if (AdaptiveTheme.of(context).mode.isLight) {
+      AdaptiveTheme.of(context).setDark();
+    } else {
+      AdaptiveTheme.of(context).setLight();
+    }
+  }
+
   Future<void> _importBudget(BuildContext context, WidgetRef ref) async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['json']);
@@ -121,12 +125,12 @@ class BudgetPage extends ConsumerWidget {
         await ref.read(budgetsService.notifier).addBudget(importedBudget);
 
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Orçamento importado com sucesso!')));
+          _showSnackBar(context, 'Orçamento importado com sucesso!', isError: false);
         }
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao importar: $e')));
+        _showSnackBar(context, 'Erro ao importar: $e', isError: true);
       }
     }
   }
@@ -161,13 +165,32 @@ class BudgetPage extends ConsumerWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              ref.read(budgetsService.notifier).addBudget(BudgetModel(id: const Uuid().v4(), date: DateTime.now(), worksite: worksiteController.text, city: cityController.text));
+              if (worksiteController.text.isEmpty || cityController.text.isEmpty) {
+                _showSnackBar(context, 'Preencha todos os campos', isError: true);
+                return;
+              }
+              ref.read(budgetsService.notifier).addBudget(
+                BudgetModel(
+                  id: const Uuid().v4(),
+                  date: DateTime.now(),
+                  worksite: worksiteController.text,
+                  city: cityController.text,
+                ),
+              );
+              worksiteController.dispose();
+              cityController.dispose();
               Navigator.pop(context);
             },
             child: const Text('Salvar'),
           ),
         ],
       ),
+    );
+  }
+
+  void _showSnackBar(BuildContext context, String message, {required bool isError}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: isError ? Colors.red : Colors.green),
     );
   }
 }

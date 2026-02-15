@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isolapp/models/budget_model.dart';
 import 'package:isolapp/models/item_model.dart';
 import 'package:isolapp/models/part_model.dart';
-import 'package:isolapp/pages/home_page.dart';
+import 'package:isolapp/pages/budget_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +45,7 @@ class App extends StatelessWidget {
         title: 'Tecnit',
         theme: theme,
         darkTheme: darkTheme,
-        home: const HomePage(),
+        home: const BudgetPage(),
         debugShowCheckedModeBanner: false,
       ),
       debugShowFloatingThemeButton: false,

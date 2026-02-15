@@ -16,19 +16,19 @@ import 'package:uuid/uuid.dart';
 enum Menu { theme, import }
 
 @Preview(
-  name: 'HomePage'
+  name: 'BudgetPage'
 )
 
 Widget preview() {
   return ProviderScope(
     child: MaterialApp(
-      home: HomePage(),
+      home: BudgetPage(),
     ),
   );
 }
 
-class HomePage extends ConsumerWidget {
-  const HomePage({super.key});
+class BudgetPage extends ConsumerWidget {
+  const BudgetPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

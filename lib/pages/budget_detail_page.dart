@@ -35,63 +35,20 @@ class BudgetDetailPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: ImageIcon(AssetImage('assets/logo_tecnit_service.png'), size: 32),
-            ),
-            const Text('Orçamento', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          ],
-        ),
+        title: const _AppBarTitle(),
         actions: [
           IconButton(
             icon: const Icon(Icons.file_download),
             tooltip: 'Exportar JSON',
-            onPressed: () async {
-              try {
-                if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-                  String? outputFile = await FilePicker.platform.saveFile(
-                    type: FileType.custom,
-                    allowedExtensions: ['json'],
-                    fileName: 'budget_${budget.id}.json',
-                  );
-
-                  if (outputFile != null) {
-                    final jsonString = jsonEncode(budget.toJson());
-                    final file = File(outputFile);
-                    await file.writeAsString(jsonString);
-                  }
-                }
-                else {
-                  await JsonService().exportBudget(budget);
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Arquivo JSON gerado com sucesso!')));
-                  }
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context,).showSnackBar(SnackBar(content: Text('Erro ao exportar: $e')));
-                }
-              }
-            },
+            onPressed: () => _exportJson(context, budget),
           ),
         ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(budget.worksite, style: const TextStyle(fontSize: 18)),
-                Text('${budget.city} - ${DateFormat('d MMM y').format(budget.date)}'),
-              ],
-            ),
-          ),
-          Divider(height: 16),
+          _Header(budget: budget),
+          const Divider(height: 16),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Text('Itens', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -122,6 +79,81 @@ class BudgetDetailPage extends ConsumerWidget {
         },
         child: const Icon(Icons.add),
       )
+    );
+  }
+
+  Future<void> _exportJson(BuildContext context, dynamic budget) async {
+    try {
+      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+        final outputFile = await FilePicker.platform.saveFile(
+          type: FileType.custom,
+          allowedExtensions: ['json'],
+          fileName: 'budget_${budget.id}.json',
+        );
+
+        if (outputFile != null) {
+          final jsonString = jsonEncode(budget.toJson());
+          final file = File(outputFile);
+          await file.writeAsString(jsonString);
+          if (context.mounted) {
+            _showSnackBar(context, 'Arquivo JSON gerado com sucesso!');
+          }
+        }
+      } else {
+        await JsonService().exportBudget(budget);
+        if (context.mounted) {
+          _showSnackBar(context, 'Arquivo JSON gerado com sucesso!');
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        _showSnackBar(context, 'Erro ao exportar: $e');
+      }
+    }
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+}
+
+class _AppBarTitle extends StatelessWidget {
+  const _AppBarTitle();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: const [
+        Padding(
+          padding: EdgeInsets.only(right: 8.0),
+          child: ImageIcon(
+            AssetImage('assets/logo_tecnit_service.png'),
+            size: 32,
+            semanticLabel: 'Logo Tecnit Service',
+          ),
+        ),
+        Text('Orçamento', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header({required this.budget});
+
+  final dynamic budget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(budget.worksite, style: const TextStyle(fontSize: 18)),
+          Text('${budget.city} - ${DateFormat('d MMM y').format(budget.date)}'),
+        ],
+      ),
     );
   }
 }

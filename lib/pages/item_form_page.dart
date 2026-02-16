@@ -55,6 +55,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
   late double _squareMeter;
   late int _multiplierFactor;
   late List<PartModel> _parts;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -73,39 +74,96 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
     _parts = widget.item?.parts != null ? List.from(widget.item!.parts) : [];
   }
 
-  void _saveItem() {
+  @override
+  void dispose() {
+    _sectorController.dispose();
+    _descriptionController.dispose();
+    _coatingController.dispose();
+    _insulatingController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveItem() async {
     if (_formKey.currentState!.validate()) {
-      final newItem = ItemModel(
-        id: widget.item?.id ?? const Uuid().v4(),
-        budgetId: widget.budget.id,
-        index: widget.item?.index ?? widget.budget.items.length + 1,
-        sector: _sectorController.text,
-        description: _descriptionController.text,
-        coating: _coatingController.text,
-        pressure: _pressure,
-        degreesCelsius: _celsiusDegree,
-        diameter: _diameter,
-        perimeter: _perimeter,
-        insulating: _insulatingController.text,
-        linearMeter: _linearMeter,
-        squareMeter: _squareMeter,
-        multiplierFactor: _multiplierFactor,
-        parts: _parts,
-      );
+      setState(() => _isSaving = true);
 
-      List<ItemModel> updatedItems = List.from(widget.budget.items);
-      if (widget.item != null) {
-        final index = updatedItems.indexWhere((i) => i.id == widget.item!.id);
-        updatedItems[index] = newItem;
-      } else {
-        updatedItems.add(newItem);
+      try {
+        final newItem = ItemModel(
+          id: widget.item?.id ?? const Uuid().v4(),
+          budgetId: widget.budget.id,
+          index: widget.item?.index ?? widget.budget.items.length + 1,
+          sector: _sectorController.text,
+          description: _descriptionController.text,
+          coating: _coatingController.text,
+          pressure: _pressure,
+          degreesCelsius: _celsiusDegree,
+          diameter: _diameter,
+          perimeter: _perimeter,
+          insulating: _insulatingController.text,
+          linearMeter: _linearMeter,
+          squareMeter: _squareMeter,
+          multiplierFactor: _multiplierFactor,
+          parts: _parts,
+        );
+
+        List<ItemModel> updatedItems = List.from(widget.budget.items);
+        if (widget.item != null) {
+          final index = updatedItems.indexWhere((i) => i.id == widget.item!.id);
+          updatedItems[index] = newItem;
+        } else {
+          updatedItems.add(newItem);
+        }
+
+        final updatedBudget = widget.budget.copyWith(items: updatedItems);
+        await ref.read(budgetsService.notifier).updateBudget(updatedBudget);
+        ref.read(selectedBudgetService.notifier).state = updatedBudget;
+        
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Erro ao salvar item: $e'),
+              backgroundColor: Colors.red,
+              action: SnackBarAction(
+                label: 'OK',
+                textColor: Colors.white,
+                onPressed: () {},
+              ),
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isSaving = false);
+        }
       }
+    }
+  }
 
-      final updatedBudget = widget.budget.copyWith(items: updatedItems);
-      ref.read(budgetsService.notifier).updateBudget(updatedBudget);
-      ref.read(selectedBudgetService.notifier).state = updatedBudget;
-      
-      Navigator.pop(context);
+  Future<void> _deletePart(int index) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar exclusão'),
+        content: const Text('Deseja realmente excluir esta peça?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      setState(() => _parts.removeAt(index));
     }
   }
 
@@ -129,7 +187,16 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
         //   child: Image.asset('assets/logo_tecnit_service.png'),
         // ),
         actions: [
-          IconButton(icon: const Icon(Icons.save), onPressed: _saveItem),
+          IconButton(
+            icon: _isSaving 
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                )
+              : const Icon(Icons.save),
+            onPressed: _isSaving ? null : _saveItem,
+          ),
         ],
       ),
       body: Form(
@@ -158,22 +225,20 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             Row(
               children: [
                 Expanded(
-                  child: TextFormField(
+                  child: _buildNumericField(
+                    label: 'Pressão',
                     initialValue: _pressure.toString(),
-                    decoration: const InputDecoration(labelText: 'Pressão', border: OutlineInputBorder()),
-                    inputFormatters: [DecimalTextInputFormatter()],
-                    keyboardType: TextInputType.number,
-                    onChanged: (v) => _pressure = double.tryParse(v) ?? 0.0,
+                    onChanged: (v) {
+                       _pressure = v;
+                    },
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: TextFormField(
+                  child: _buildNumericField(
+                    label: 'Temperatura (°C)',
                     initialValue: _celsiusDegree.toString(),
-                    decoration: const InputDecoration(labelText: 'Temperatura (°C)', border: OutlineInputBorder()),
-                    inputFormatters: [DecimalTextInputFormatter()],
-                    keyboardType: TextInputType.number,
-                    onChanged: (v) => _celsiusDegree = double.tryParse(v) ?? 0.0,
+                    onChanged: (v) => _celsiusDegree = v,
                   ),
                 ),
               ],
@@ -182,22 +247,18 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             Row(
               children: [
                 Expanded(
-                  child: TextFormField(
+                  child: _buildNumericField(
+                    label: 'Diâmetro (Ø)',
                     initialValue: _diameter.toString(),
-                    decoration: const InputDecoration(labelText: 'Diâmetro (Ø)', border: OutlineInputBorder()),
-                    inputFormatters: [DecimalTextInputFormatter()],
-                    keyboardType: TextInputType.number,
-                    onChanged: (v) => _diameter = double.tryParse(v) ?? 0.0,
+                    onChanged: (v) => _diameter = v,
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: TextFormField(
+                  child: _buildNumericField(
+                    label: 'Perímetro',
                     initialValue: _perimeter.toString(),
-                    decoration: const InputDecoration(labelText: 'Perímetro', border: OutlineInputBorder()),
-                    inputFormatters: [DecimalTextInputFormatter()],
-                    keyboardType: TextInputType.number,
-                    onChanged: (v) => _perimeter = double.tryParse(v) ?? 0.0,
+                    onChanged: (v) => _perimeter = v,
                   ),
                 ),
               ],
@@ -212,22 +273,18 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             Row(
               children: [
                 Expanded(
-                  child: TextFormField(
+                  child: _buildNumericField(
+                    label: 'Metro Linear',
                     initialValue: _linearMeter.toString(),
-                    decoration: const InputDecoration(labelText: 'Metro Linear', border: OutlineInputBorder()),
-                    inputFormatters: [DecimalTextInputFormatter()],
-                    keyboardType: TextInputType.number,
-                    onChanged: (v) => _linearMeter = double.tryParse(v) ?? 0.0,
+                    onChanged: (v) => _linearMeter = v,
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: TextFormField(
+                  child: _buildNumericField(
+                    label: 'Metro Quadrado',
                     initialValue: _squareMeter.toString(),
-                    decoration: const InputDecoration(labelText: 'Metro Quadrado', border: OutlineInputBorder()),
-                    inputFormatters: [DecimalTextInputFormatter()],
-                    keyboardType: TextInputType.number,
-                    onChanged: (v) => _squareMeter = double.tryParse(v) ?? 0.0,
+                    onChanged: (v) => _squareMeter = v,
                   ),
                 ),
               ],
@@ -300,7 +357,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
           onTap: () => _updatePart(part, index),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () => setState(() => _parts.removeAt(index)),
+            onPressed: () => _deletePart(index),
           ),
         );
       case PartType.bend:
@@ -318,7 +375,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
           onTap: () => _updatePart(part, index),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () => setState(() => _parts.removeAt(index)),
+            onPressed: () => _deletePart(index),
           ),
         );
       case PartType.flange:
@@ -339,7 +396,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
           onTap: () => _updatePart(part, index),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () => setState(() => _parts.removeAt(index)),
+            onPressed: () => _deletePart(index),
           ),
         );
       case PartType.dishedhead:
@@ -356,7 +413,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
           onTap: () => _updatePart(part, index),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () => setState(() => _parts.removeAt(index)),
+            onPressed: () => _deletePart(index),
           ),
         );
       case PartType.valvebox:
@@ -377,7 +434,7 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
           onTap: () => _updatePart(part, index),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () => setState(() => _parts.removeAt(index)),
+            onPressed: () => _deletePart(index),
           ),
         );
       case PartType.squaretoround:
@@ -396,11 +453,27 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
           onTap: () => _updatePart(part, index),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () => setState(() => _parts.removeAt(index)),
+            onPressed: () => _deletePart(index),
           ),
         );
       default:
         return ListTile();
     }
+  }
+
+  Widget _buildNumericField({
+    required String label,
+    required String initialValue,
+    required ValueChanged<double> onChanged,
+    bool isRequired = false,
+  }) {
+    return TextFormField(
+      initialValue: initialValue,
+      decoration: InputDecoration(labelText: label, border: OutlineInputBorder()),
+      inputFormatters: [DecimalTextInputFormatter()],
+      keyboardType: TextInputType.number,
+      onChanged: (v) => onChanged(double.tryParse(v) ?? 0.0),
+      validator: isRequired ? (v) => (v?.isEmpty ?? true) ? 'Obrigatório' : null : null,
+    );
   }
 }

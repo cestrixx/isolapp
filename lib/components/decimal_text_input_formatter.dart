@@ -17,7 +17,7 @@ class DecimalTextInputFormatter extends TextInputFormatter {
     }
     
     double value = double.parse(digitsOnly) / (pow10(decimalRange));
-    String newText = value.toStringAsFixed(decimalRange).replaceAll('.', ',');
+    String newText = value.toStringAsFixed(decimalRange);//.replaceAll('.', ',');
     
     return TextEditingValue(text: newText, selection: TextSelection.collapsed(offset: newText.length));
   }

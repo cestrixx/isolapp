@@ -99,7 +99,7 @@ class BudgetPage extends ConsumerWidget {
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddBudgetDialog(context, ref),
+        onPressed: () => _showCreateBudgetDialog(context, ref),
         child: const Icon(Icons.add),
       ),
     );
@@ -135,7 +135,7 @@ class BudgetPage extends ConsumerWidget {
     }
   }
 
-  void _showAddBudgetDialog(BuildContext context, WidgetRef ref) {
+  void _showCreateBudgetDialog(BuildContext context, WidgetRef ref) {
     final worksiteController = TextEditingController();
     final cityController = TextEditingController();
     showDialog(

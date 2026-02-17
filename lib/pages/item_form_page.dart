@@ -1,4 +1,5 @@
 
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +10,8 @@ import 'package:isolapp/models/item_model.dart';
 import 'package:isolapp/models/part_model.dart';
 import 'package:isolapp/pages/part_form_page.dart';
 import 'package:isolapp/services/budget_service.dart';
+import 'package:isolapp/utils/commands.dart';
+import 'package:isolapp/utils/speech.dart';
 import 'package:uuid/uuid.dart';
 
 @Preview(
@@ -47,15 +50,17 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
   late TextEditingController _descriptionController;
   late TextEditingController _coatingController;
   late TextEditingController _insulatingController;
-  late double _pressure;
-  late double _celsiusDegree;
-  late double _diameter;
-  late double _perimeter;
-  late double _linearMeter;
-  late double _squareMeter;
-  late int _multiplierFactor;
+  late TextEditingController _pressureController;
+  late TextEditingController _celsiusDegreeController;
+  late TextEditingController _diameterController;
+  late TextEditingController _perimeterController;
+  late TextEditingController _linearMeterController;
+  late TextEditingController _squareMeterController;
+  late TextEditingController _multiplierFactorController;
   late List<PartModel> _parts;
   bool _isSaving = false;
+  String textSample = 'Click button to start recording';
+  bool isListening = false;
 
   @override
   void initState() {
@@ -63,14 +68,14 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
     _sectorController = TextEditingController(text: widget.item?.sector ?? '');
     _descriptionController = TextEditingController(text: widget.item?.description ?? '');
     _coatingController = TextEditingController(text: widget.item?.coating ?? '');
-    _pressure = widget.item?.pressure ?? 0.0;
-    _celsiusDegree = widget.item?.degreesCelsius ?? 0.0;
-    _diameter = widget.item?.diameter ?? 0.0;
-    _perimeter = widget.item?.perimeter ?? 0.0;
+    _pressureController = TextEditingController(text: widget.item?.pressure.toString() ?? '0.0');
+    _celsiusDegreeController = TextEditingController(text: widget.item?.degreesCelsius.toString() ?? '0.0');
+    _diameterController = TextEditingController(text: widget.item?.diameter.toString() ?? '0.0');
+    _perimeterController = TextEditingController(text: widget.item?.perimeter.toString() ?? '0.0');
     _insulatingController = TextEditingController(text: widget.item?.insulating ?? '');
-    _linearMeter = widget.item?.linearMeter ?? 0.0;
-    _squareMeter = widget.item?.squareMeter ?? 0.0;
-    _multiplierFactor = widget.item?.multiplierFactor ?? 1;
+    _linearMeterController = TextEditingController(text: widget.item?.linearMeter.toString() ?? '0.0');
+    _squareMeterController = TextEditingController(text: widget.item?.squareMeter.toString() ?? '0.0');
+    _multiplierFactorController = TextEditingController(text: widget.item?.multiplierFactor.toString() ?? '1');
     _parts = widget.item?.parts != null ? List.from(widget.item!.parts) : [];
   }
 
@@ -80,6 +85,13 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
     _descriptionController.dispose();
     _coatingController.dispose();
     _insulatingController.dispose();
+    _pressureController.dispose();
+    _celsiusDegreeController.dispose();
+    _diameterController.dispose();
+    _perimeterController.dispose();
+    _linearMeterController.dispose();
+    _squareMeterController.dispose();
+    _multiplierFactorController.dispose();
     super.dispose();
   }
 
@@ -95,14 +107,14 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
           sector: _sectorController.text,
           description: _descriptionController.text,
           coating: _coatingController.text,
-          pressure: _pressure,
-          degreesCelsius: _celsiusDegree,
-          diameter: _diameter,
-          perimeter: _perimeter,
+          pressure: _pressureController.text.isNotEmpty ? double.parse(_pressureController.text) : 0.0,
+          degreesCelsius: _celsiusDegreeController.text.isNotEmpty ? double.parse(_celsiusDegreeController.text) : 0.0,
+          diameter: _diameterController.text.isNotEmpty ? double.parse(_diameterController.text) : 0.0,
+          perimeter: _perimeterController.text.isNotEmpty ? double.parse(_perimeterController.text) : 0.0,
           insulating: _insulatingController.text,
-          linearMeter: _linearMeter,
-          squareMeter: _squareMeter,
-          multiplierFactor: _multiplierFactor,
+          linearMeter: _linearMeterController.text.isNotEmpty ? double.parse(_linearMeterController.text) : 0.0,
+          squareMeter: _squareMeterController.text.isNotEmpty ? double.parse(_squareMeterController.text) : 0.0,
+          multiplierFactor: _multiplierFactorController.text.isNotEmpty ? int.parse(_multiplierFactorController.text) : 1,
           parts: _parts,
         );
 
@@ -180,12 +192,6 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             const Text('Item', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           ],
         ),
-
-        // title: Text('Tecnit - Item', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        // leading: Padding(
-        //   padding: const EdgeInsets.all(8.0),
-        //   child: Image.asset('assets/logo_tecnit_service.png'),
-        // ),
         actions: [
           IconButton(
             icon: _isSaving 
@@ -225,20 +231,20 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             Row(
               children: [
                 Expanded(
-                  child: _buildNumericField(
-                    label: 'Pressão',
-                    initialValue: _pressure.toString(),
-                    onChanged: (v) {
-                       _pressure = v;
-                    },
+                  child: TextFormField(
+                    controller: _pressureController,
+                    decoration: InputDecoration(labelText: 'Pressão', border: OutlineInputBorder()),
+                    inputFormatters: [DecimalTextInputFormatter()],
+                    keyboardType: TextInputType.number,
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: _buildNumericField(
-                    label: 'Temperatura (°C)',
-                    initialValue: _celsiusDegree.toString(),
-                    onChanged: (v) => _celsiusDegree = v,
+                  child: TextFormField(
+                    controller: _celsiusDegreeController,
+                    decoration: InputDecoration(labelText: 'Temperatura (°C)', border: OutlineInputBorder()),
+                    inputFormatters: [DecimalTextInputFormatter()],
+                    keyboardType: TextInputType.number,
                   ),
                 ),
               ],
@@ -247,18 +253,20 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             Row(
               children: [
                 Expanded(
-                  child: _buildNumericField(
-                    label: 'Diâmetro (Ø)',
-                    initialValue: _diameter.toString(),
-                    onChanged: (v) => _diameter = v,
+                  child: TextFormField(
+                    controller: _diameterController,
+                    decoration: InputDecoration(labelText: 'Diâmetro (Ø)', border: OutlineInputBorder()),
+                    inputFormatters: [DecimalTextInputFormatter()],
+                    keyboardType: TextInputType.number,
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: _buildNumericField(
-                    label: 'Perímetro',
-                    initialValue: _perimeter.toString(),
-                    onChanged: (v) => _perimeter = v,
+                  child: TextFormField(
+                    controller: _perimeterController,
+                    decoration: InputDecoration(labelText: 'Perímetro', border: OutlineInputBorder()),
+                    inputFormatters: [DecimalTextInputFormatter()],
+                    keyboardType: TextInputType.number,
                   ),
                 ),
               ],
@@ -273,29 +281,30 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
             Row(
               children: [
                 Expanded(
-                  child: _buildNumericField(
-                    label: 'Metro Linear',
-                    initialValue: _linearMeter.toString(),
-                    onChanged: (v) => _linearMeter = v,
+                  child: TextFormField(
+                    controller: _linearMeterController,
+                    decoration: InputDecoration(labelText: 'Metro Linear', border: OutlineInputBorder()),
+                    inputFormatters: [DecimalTextInputFormatter()],
+                    keyboardType: TextInputType.number,
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: _buildNumericField(
-                    label: 'Metro Quadrado',
-                    initialValue: _squareMeter.toString(),
-                    onChanged: (v) => _squareMeter = v,
+                  child: TextFormField(
+                    controller: _squareMeterController,
+                    decoration: InputDecoration(labelText: 'Metro Quadrado', border: OutlineInputBorder()),
+                    inputFormatters: [DecimalTextInputFormatter()],
+                    keyboardType: TextInputType.number,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             TextFormField(
-              initialValue: _multiplierFactor.toString(),
+              controller: _multiplierFactorController,
               decoration: const InputDecoration(labelText: 'Fator Multiplicador (X)', border: OutlineInputBorder()),
               inputFormatters: [IntegerTextInputFormatter()],
               keyboardType: TextInputType.number,
-              onChanged: (v) => _multiplierFactor = int.tryParse(v) ?? 1,
             ),
             const Divider(height: 40),
             Row(
@@ -329,6 +338,15 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
           ],
         ),
       ),
+      floatingActionButton: AvatarGlow(
+        animate: isListening,
+        glowColor: Colors.teal,
+        child: FloatingActionButton(
+          onPressed: toggleRecording,
+          child: Icon(isListening ? Icons.circle : Icons.mic, size: 35),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -461,19 +479,67 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
     }
   }
 
-  Widget _buildNumericField({
-    required String label,
-    required String initialValue,
-    required ValueChanged<double> onChanged,
-    bool isRequired = false,
-  }) {
-    return TextFormField(
-      initialValue: initialValue,
-      decoration: InputDecoration(labelText: label, border: OutlineInputBorder()),
-      inputFormatters: [DecimalTextInputFormatter()],
-      keyboardType: TextInputType.number,
-      onChanged: (v) => onChanged(double.tryParse(v) ?? 0.0),
-      validator: isRequired ? (v) => (v?.isEmpty ?? true) ? 'Obrigatório' : null : null,
-    );
-  }
+
+  Future toggleRecording() => Speech.toggleRecording(
+  onResult: (String text) => setState(() { 
+    textSample = text;
+  }),
+  onListening: (bool isListening) {
+    setState(() {
+      this.isListening = isListening;
+    });
+    if (!isListening) {
+      Future.delayed(const Duration(milliseconds: 1000), () { 
+        Utils.scanVoicedText(textSample, (String command, String value) {
+          // ignore: avoid_print
+          print('Command: $command, Value: $value'); 
+          if (command == Command.sector) {
+            setState(() {
+              _sectorController.text = value;
+            });
+          } else if (command == Command.description) {
+            setState(() {
+              _descriptionController.text = value;
+            });
+          } else if (command == Command.coating) {
+            setState(() {
+              _coatingController.text = value;
+            });
+          } else if (command == Command.insulating) {
+            setState(() {
+              _insulatingController.text = value;
+            });
+          } else if (command == Command.pressure) {
+            setState(() {
+              _pressureController.text = double.tryParse(value)?.toString() ?? '0.0';
+            });
+          } else if (command == Command.degreesCelsius) {
+            setState(() {
+              _celsiusDegreeController.text = double.tryParse(value)?.toString() ?? '0.0';
+            });
+          } else if (command == Command.diameter) {
+            setState(() {
+              _diameterController.text = double.tryParse(value)?.toString() ?? '0.0';
+            });
+          } else if (command == Command.perimeter) {
+            setState(() {
+              _perimeterController.text = double.tryParse(value)?.toString() ?? '0.0';
+            });
+          } else if (command == Command.linearMeter) {
+            setState(() {
+              _linearMeterController.text = double.tryParse(value)?.toString() ?? '0.0';
+            });
+          } else if (command == Command.squareMeter) {
+            setState(() {
+              _squareMeterController.text = double.tryParse(value)?.toString() ?? '0.0';
+            });
+          } else if (command == Command.multiplierFactor) {
+            setState(() {
+              _multiplierFactorController.text = int.tryParse(value)?.toString() ?? '1';
+            });
+          }
+        });
+      });
+    }
+  });
 }

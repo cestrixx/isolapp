@@ -46,6 +46,7 @@ class App extends StatelessWidget {
         theme: theme,
         darkTheme: darkTheme,
         home: const BudgetPage(),
+        //home: const BudgetPage(),
         debugShowCheckedModeBanner: false,
       ),
       debugShowFloatingThemeButton: false,

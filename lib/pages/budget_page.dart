@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:isolapp/models/budget_model.dart';
 import 'package:isolapp/pages/budget_detail_page.dart';
+import 'package:isolapp/pages/speech_page.dart';
 import 'package:isolapp/services/budget_service.dart';
 import 'package:isolapp/services/json_service.dart';
 import 'package:uuid/uuid.dart';
@@ -99,7 +100,10 @@ class BudgetPage extends ConsumerWidget {
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showCreateBudgetDialog(context, ref),
+        //onPressed: () => _showCreateBudgetDialog(context, ref),
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const SpeechPage()));
+        },
         child: const Icon(Icons.add),
       ),
     );

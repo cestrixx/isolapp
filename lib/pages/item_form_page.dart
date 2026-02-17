@@ -9,6 +9,7 @@ import 'package:isolapp/models/budget_model.dart';
 import 'package:isolapp/models/item_model.dart';
 import 'package:isolapp/models/part_model.dart';
 import 'package:isolapp/pages/part_form_page.dart';
+import 'package:isolapp/provider/speech_to_text_provider.dart';
 import 'package:isolapp/services/budget_service.dart';
 import 'package:isolapp/utils/commands.dart';
 import 'package:isolapp/utils/speech.dart';
@@ -60,7 +61,6 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
   late List<PartModel> _parts;
   bool _isSaving = false;
   String textSample = 'Click button to start recording';
-  bool isListening = false;
 
   @override
   void initState() {
@@ -181,6 +181,9 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    final speech = ref.watch(speechProvider);
+    final notifier = ref.read(speechProvider.notifier);
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -339,11 +342,55 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
         ),
       ),
       floatingActionButton: AvatarGlow(
-        animate: isListening,
+        animate: speech.isListening,
         glowColor: Colors.teal,
         child: FloatingActionButton(
-          onPressed: toggleRecording,
-          child: Icon(isListening ? Icons.circle : Icons.mic, size: 35),
+          onPressed: () {
+            if (!speech.isInitialized) {
+              notifier.initialize();
+            }
+            if (speech.isListening) {
+              notifier.stopListening();
+            } else {
+              notifier.startListening(
+                localeId: 'pt_BR',
+                onListeningResult: (recognizedText, confidence) {
+                  textSample = recognizedText;
+                    Utils.scanVoicedText(textSample, (String command, String value) {
+                      if (!speech.isListening && value.isNotEmpty) {
+                        Utils.scanVoicedText(textSample, (String command, String value) {
+                          // ignore: avoid_print
+                          print('Command: $command, Value: $value'); 
+                          if (command == Command.sector) {
+                            setState(() { _sectorController.text = value; });
+                          } else if (command == Command.description) {
+                            setState(() { _descriptionController.text = value; });
+                          } else if (command == Command.coating) {
+                            setState(() { _coatingController.text = value; });
+                          } else if (command == Command.insulating) {
+                            setState(() { _insulatingController.text = value; });
+                          } else if (command == Command.pressure) {
+                            setState(() { _pressureController.text = double.tryParse(value)?.toString() ?? '0.0'; });
+                          } else if (command == Command.degreesCelsius) {
+                            setState(() { _celsiusDegreeController.text = double.tryParse(value)?.toString() ?? '0.0'; });
+                          } else if (command == Command.diameter) {
+                            setState(() { _diameterController.text = double.tryParse(value)?.toString() ?? '0.0'; });
+                          } else if (command == Command.perimeter) {
+                            setState(() { _perimeterController.text = double.tryParse(value)?.toString() ?? '0.0'; });
+                          } else if (command == Command.linearMeter) {
+                            setState(() { _linearMeterController.text = double.tryParse(value)?.toString() ?? '0.0'; });
+                          } else if (command == Command.squareMeter) {
+                            setState(() { _squareMeterController.text = double.tryParse(value)?.toString() ?? '0.0'; });
+                          } else if (command == Command.multiplierFactor) {
+                            setState(() { _multiplierFactorController.text = int.tryParse(value)?.toString() ?? '1'; });
+                          }
+                        });
+                      }
+                    });
+                  });
+            }
+          },
+          child: Icon(speech.isListening ? Icons.circle : Icons.mic, size: 35),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -478,68 +525,4 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
         return ListTile();
     }
   }
-
-
-  Future toggleRecording() => Speech.toggleRecording(
-  onResult: (String text) => setState(() { 
-    textSample = text;
-  }),
-  onListening: (bool isListening) {
-    setState(() {
-      this.isListening = isListening;
-    });
-    if (!isListening) {
-      Future.delayed(const Duration(milliseconds: 1000), () { 
-        Utils.scanVoicedText(textSample, (String command, String value) {
-          // ignore: avoid_print
-          print('Command: $command, Value: $value'); 
-          if (command == Command.sector) {
-            setState(() {
-              _sectorController.text = value;
-            });
-          } else if (command == Command.description) {
-            setState(() {
-              _descriptionController.text = value;
-            });
-          } else if (command == Command.coating) {
-            setState(() {
-              _coatingController.text = value;
-            });
-          } else if (command == Command.insulating) {
-            setState(() {
-              _insulatingController.text = value;
-            });
-          } else if (command == Command.pressure) {
-            setState(() {
-              _pressureController.text = double.tryParse(value)?.toString() ?? '0.0';
-            });
-          } else if (command == Command.degreesCelsius) {
-            setState(() {
-              _celsiusDegreeController.text = double.tryParse(value)?.toString() ?? '0.0';
-            });
-          } else if (command == Command.diameter) {
-            setState(() {
-              _diameterController.text = double.tryParse(value)?.toString() ?? '0.0';
-            });
-          } else if (command == Command.perimeter) {
-            setState(() {
-              _perimeterController.text = double.tryParse(value)?.toString() ?? '0.0';
-            });
-          } else if (command == Command.linearMeter) {
-            setState(() {
-              _linearMeterController.text = double.tryParse(value)?.toString() ?? '0.0';
-            });
-          } else if (command == Command.squareMeter) {
-            setState(() {
-              _squareMeterController.text = double.tryParse(value)?.toString() ?? '0.0';
-            });
-          } else if (command == Command.multiplierFactor) {
-            setState(() {
-              _multiplierFactorController.text = int.tryParse(value)?.toString() ?? '1';
-            });
-          }
-        });
-      });
-    }
-  });
 }

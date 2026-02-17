@@ -36,6 +36,9 @@ class Utils {
     if (commandIndex == -1) {
       return '';
     } else {
+      if (finalIndex >= text.length) {
+        return '';
+      }
       return text.substring(finalIndex).trim();
     }
   }

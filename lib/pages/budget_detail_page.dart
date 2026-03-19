@@ -106,9 +106,9 @@ class BudgetDetailPage extends ConsumerWidget {
         }
       }
     } catch (e) {
-      if (context.mounted) {
-        _showSnackBar(context, 'Erro ao exportar: $e');
-      }
+      // if (context.mounted) {
+      //   _showSnackBar(context, 'Erro ao exportar: $e');
+      // }
     }
   }
 

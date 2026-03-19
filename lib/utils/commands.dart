@@ -12,6 +12,8 @@ class Command {
     linearMeter,
     squareMeter,
     multiplierFactor,
+    worksite,
+    city,
   ];
 
   static const 
@@ -25,7 +27,9 @@ class Command {
   insulating = 'isolante',
   linearMeter = 'metro linear',
   squareMeter = 'metro quadrado',
-  multiplierFactor = 'fator multiplicador';
+  multiplierFactor = 'fator multiplicador',
+  worksite = 'obra',
+  city = 'cidade';
 }
 
 class Utils {
@@ -78,6 +82,12 @@ class Utils {
     } else if (text.contains(Command.multiplierFactor)) {
       final result = _executeCommand(text: text, command: Command.multiplierFactor);
       onResult(Command.multiplierFactor, result);
+    } else if (text.contains(Command.worksite)) {
+      final result = _executeCommand(text: text, command: Command.worksite);
+      onResult(Command.worksite, result);
+    } else if (text.contains(Command.city)) {
+      final result = _executeCommand(text: text, command: Command.city);
+      onResult(Command.city, result);
     }
   }
 }

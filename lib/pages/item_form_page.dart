@@ -12,7 +12,6 @@ import 'package:isolapp/pages/part_form_page.dart';
 import 'package:isolapp/provider/speech_to_text_provider.dart';
 import 'package:isolapp/services/budget_service.dart';
 import 'package:isolapp/utils/commands.dart';
-import 'package:isolapp/utils/speech.dart';
 import 'package:uuid/uuid.dart';
 
 @Preview(
@@ -356,38 +355,37 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
                 localeId: 'pt_BR',
                 onListeningResult: (recognizedText, confidence) {
                   textSample = recognizedText;
-                    Utils.scanVoicedText(textSample, (String command, String value) {
-                      if (!speech.isListening && value.isNotEmpty) {
-                        Utils.scanVoicedText(textSample, (String command, String value) {
-                          // ignore: avoid_print
-                          print('Command: $command, Value: $value'); 
-                          if (command == Command.sector) {
-                            setState(() { _sectorController.text = value; });
-                          } else if (command == Command.description) {
-                            setState(() { _descriptionController.text = value; });
-                          } else if (command == Command.coating) {
-                            setState(() { _coatingController.text = value; });
-                          } else if (command == Command.insulating) {
-                            setState(() { _insulatingController.text = value; });
-                          } else if (command == Command.pressure) {
-                            setState(() { _pressureController.text = double.tryParse(value)?.toString() ?? '0.0'; });
-                          } else if (command == Command.degreesCelsius) {
-                            setState(() { _celsiusDegreeController.text = double.tryParse(value)?.toString() ?? '0.0'; });
-                          } else if (command == Command.diameter) {
-                            setState(() { _diameterController.text = double.tryParse(value)?.toString() ?? '0.0'; });
-                          } else if (command == Command.perimeter) {
-                            setState(() { _perimeterController.text = double.tryParse(value)?.toString() ?? '0.0'; });
-                          } else if (command == Command.linearMeter) {
-                            setState(() { _linearMeterController.text = double.tryParse(value)?.toString() ?? '0.0'; });
-                          } else if (command == Command.squareMeter) {
-                            setState(() { _squareMeterController.text = double.tryParse(value)?.toString() ?? '0.0'; });
-                          } else if (command == Command.multiplierFactor) {
-                            setState(() { _multiplierFactorController.text = int.tryParse(value)?.toString() ?? '1'; });
-                          }
-                        });
-                      }
-                    });
+                  Utils.scanVoicedText(textSample, (String command, String value) {
+                    if (!speech.isListening && value.isNotEmpty) {
+                        // ignore: avoid_print
+                        print('Command: $command, Value: $value'); 
+                        if (command == Command.sector) {
+                          setState(() { _sectorController.text = value; });
+                        } else if (command == Command.description) {
+                          setState(() { _descriptionController.text = value; });
+                        } else if (command == Command.coating) {
+                          setState(() { _coatingController.text = value; });
+                        } else if (command == Command.insulating) {
+                          setState(() { _insulatingController.text = value; });
+                        } else if (command == Command.pressure) {
+                          setState(() { _pressureController.text = double.tryParse(value)?.toString() ?? '0.0'; });
+                        } else if (command == Command.degreesCelsius) {
+                          setState(() { _celsiusDegreeController.text = double.tryParse(value)?.toString() ?? '0.0'; });
+                        } else if (command == Command.diameter) {
+                          setState(() { _diameterController.text = double.tryParse(value)?.toString() ?? '0.0'; });
+                        } else if (command == Command.perimeter) {
+                          setState(() { _perimeterController.text = double.tryParse(value)?.toString() ?? '0.0'; });
+                        } else if (command == Command.linearMeter) {
+                          setState(() { _linearMeterController.text = double.tryParse(value)?.toString() ?? '0.0'; });
+                        } else if (command == Command.squareMeter) {
+                          setState(() { _squareMeterController.text = double.tryParse(value)?.toString() ?? '0.0'; });
+                        } else if (command == Command.multiplierFactor) {
+                          setState(() { _multiplierFactorController.text = int.tryParse(value)?.toString() ?? '1'; });
+                        }
+                    }
                   });
+                },
+              );
             }
           },
           child: Icon(speech.isListening ? Icons.circle : Icons.mic, size: 35),

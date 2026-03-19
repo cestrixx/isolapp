@@ -8,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:isolapp/models/budget_model.dart';
 import 'package:isolapp/pages/budget_detail_page.dart';
-import 'package:isolapp/pages/speech_page.dart';
 import 'package:isolapp/services/budget_service.dart';
 import 'package:isolapp/services/json_service.dart';
 import 'package:uuid/uuid.dart';
@@ -89,7 +88,29 @@ class BudgetPage extends ConsumerWidget {
                     subtitle: Text('${budget.city} - ${DateFormat('d MMM y').format(budget.date)}'),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => ref.read(budgetsService.notifier).deleteBudget(budget.id),
+                      onPressed: () async{
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Confirmar exclusão'),
+                            content: const Text('Deseja realmente excluir o Orçamento?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('Cancelar'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirmed == true) {
+                          ref.read(budgetsService.notifier).deleteBudget(budgets[index].id);
+                        }
+                      },
                     ),
                     onTap: () {
                       ref.read(selectedBudgetService.notifier).state = budget;
@@ -100,10 +121,8 @@ class BudgetPage extends ConsumerWidget {
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        //onPressed: () => _showCreateBudgetDialog(context, ref),
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const SpeechPage()));
-        },
+        onPressed: () => _showCreateBudgetDialog(context, ref),
+        //onPressed: () { Navigator.push(context, MaterialPageRoute(builder: (context) => const SpeechPage())); },
         child: const Icon(Icons.add),
       ),
     );
@@ -142,6 +161,9 @@ class BudgetPage extends ConsumerWidget {
   void _showCreateBudgetDialog(BuildContext context, WidgetRef ref) {
     final worksiteController = TextEditingController();
     final cityController = TextEditingController();
+    // final speech = ref.watch(speechProvider);
+    // final notifier = ref.read(speechProvider.notifier);
+    // String textSample = 'Click button to start recording';
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -163,29 +185,87 @@ class BudgetPage extends ConsumerWidget {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (worksiteController.text.isEmpty || cityController.text.isEmpty) {
-                _showSnackBar(context, 'Preencha todos os campos', isError: true);
-                return;
-              }
-              ref.read(budgetsService.notifier).addBudget(
-                BudgetModel(
-                  id: const Uuid().v4(),
-                  date: DateTime.now(),
-                  worksite: worksiteController.text,
-                  city: cityController.text,
-                ),
-              );
-              worksiteController.dispose();
-              cityController.dispose();
-              Navigator.pop(context);
-            },
-            child: const Text('Salvar'),
+          Column(
+            children: [
+              // ElevatedButton(
+              //   onPressed: () {
+              //     if (speech.isListening) {
+              //       notifier.stopListening();
+              //     } else {
+              //       if (!speech.isInitialized) {
+              //         notifier.initialize();
+              //       }
+              //       if (speech.isListening) {
+              //         notifier.stopListening();
+              //       } else {
+              //         notifier.startListening(
+              //           localeId: 'pt_BR',
+              //           onListeningResult: (recognizedText, confidence) {
+              //             textSample = recognizedText;
+              //             Utils.scanVoicedText(textSample, (
+              //               String command,
+              //               String value,
+              //             ) {
+              //               if (!speech.isListening && value.isNotEmpty) {
+              //                 // ignore: avoid_print
+              //                 print('Command: $command, Value: $value');
+              //                 if (command == Command.worksite) {
+              //                   worksiteController.text = value;
+              //                 } else if (command == Command.city) {
+              //                   cityController.text = value;
+              //                 }
+              //               }
+              //             });
+              //           },
+              //         );
+              //       }
+              //     }
+              //   },
+              //   child: Icon(
+              //     speech.isListening ? Icons.circle : Icons.mic,
+              //     size: 35,
+              //   ),
+              // ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancelar'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (worksiteController.text.isEmpty ||
+                          cityController.text.isEmpty) {
+                        _showSnackBar(
+                          context,
+                          'Preencha todos os campos',
+                          isError: true,
+                        );
+                        return;
+                      }
+                      final budget = BudgetModel(
+                        id: const Uuid().v4(),
+                        date: DateTime.now(),
+                        worksite: worksiteController.text,
+                        city: cityController.text,
+                      );
+
+                      ref.read(budgetsService.notifier)
+                         .addBudget(budget);
+                      
+                      worksiteController.dispose();
+                      cityController.dispose();
+                      
+                      Navigator.pop(context);
+                      ref.read(selectedBudgetService.notifier).state = budget;
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => BudgetDetailPage()));
+                    },
+                    child: const Text('Salvar'),
+                  ),
+                ],
+              )
+            ],
           ),
         ],
       ),

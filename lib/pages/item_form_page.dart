@@ -195,16 +195,39 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: _isSaving 
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                )
-              : const Icon(Icons.save),
-            onPressed: _isSaving ? null : _saveItem,
-          ),
+          PopupMenuButton(
+          itemBuilder:  (context) => [
+            PopupMenuItem(
+              value: 'Salvar Orçamento',
+              child: Row(
+                children: [ 
+                  _isSaving 
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : const Icon(Icons.save, color: Colors.green),
+                  const SizedBox(width: 8),
+                  const Text('Salvar Orçamento'),
+                ],
+              ),
+            ),
+            PopupMenuItem(
+              value: 'Escanear com câmera',
+              child: Row(
+                children: [
+                  const Icon(Icons.videocam, color: Colors.brown),
+                  const SizedBox(width: 8),
+                  const Text('Escanear com câmera'),
+                ],
+              ),
+            ),
+          ], 
+          onSelected: (value) {
+            if (value == 'Escanear com câmera') {
+            } else if (value == 'Salvar Orçamento' && widget.item != null) {
+              if (!_isSaving) {
+                _saveItem();
+              }
+            }
+          }),
         ],
       ),
       body: Form(

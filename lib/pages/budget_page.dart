@@ -60,14 +60,14 @@ class BudgetPage extends ConsumerWidget {
               PopupMenuItem<Menu>(
                 value: Menu.import,
                 child: const ListTile(
-                  leading: Icon(Icons.file_upload),
+                  leading: Icon(Icons.file_upload, color: Colors.blue),
                   title: Text('Importar Orçamento'),
                 ),
               ),
               PopupMenuItem<Menu>(
                 value: Menu.theme,
                 child: const ListTile(
-                  leading: Icon(Icons.published_with_changes),
+                  leading: Icon(Icons.published_with_changes, color: Colors.orange),
                   title: Text('Trocar tema'),
                 ),
               ),

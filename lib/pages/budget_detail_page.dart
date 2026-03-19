@@ -38,8 +38,8 @@ class BudgetDetailPage extends ConsumerWidget {
         title: const _AppBarTitle(),
         actions: [
           IconButton(
-            icon: const Icon(Icons.file_download),
-            tooltip: 'Exportar JSON',
+            icon: const Icon(Icons.file_download, color: Colors.red),
+            tooltip: 'Exportar Orçamento',
             onPressed: () => _exportJson(context, budget),
           ),
         ],

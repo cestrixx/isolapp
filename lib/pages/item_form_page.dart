@@ -9,6 +9,7 @@ import 'package:isolapp/models/budget_model.dart';
 import 'package:isolapp/models/item_model.dart';
 import 'package:isolapp/models/part_model.dart';
 import 'package:isolapp/pages/part_form_page.dart';
+import 'package:isolapp/pages/settings_page.dart';
 import 'package:isolapp/provider/speech_to_text_provider.dart';
 import 'package:isolapp/services/budget_service.dart';
 import 'package:isolapp/utils/commands.dart';
@@ -195,20 +196,18 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: _isSaving 
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.green),
+                )
+              : const Icon(Icons.save, color: Colors.green),
+            onPressed: _isSaving ? null : _saveItem,
+          ),
           PopupMenuButton(
           itemBuilder:  (context) => [
-            PopupMenuItem(
-              value: 'Salvar Orçamento',
-              child: Row(
-                children: [ 
-                  _isSaving 
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                    : const Icon(Icons.save, color: Colors.green),
-                  const SizedBox(width: 8),
-                  const Text('Salvar Orçamento'),
-                ],
-              ),
-            ),
             PopupMenuItem(
               value: 'Escanear com câmera',
               child: Row(
@@ -219,9 +218,21 @@ class _ItemFormPageState extends ConsumerState<ItemFormPage> {
                 ],
               ),
             ),
+            PopupMenuItem(
+              value: 'Opções',
+              child: Row(
+                children: [
+                  const Icon(Icons.settings, color: Colors.orange),
+                  const SizedBox(width: 8),
+                  const Text('Opções'),
+                ],
+              ),
+            ),
           ], 
           onSelected: (value) {
             if (value == 'Escanear com câmera') {
+            } else if (value == 'Opções') {
+              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsPage()));
             } else if (value == 'Salvar Orçamento' && widget.item != null) {
               if (!_isSaving) {
                 _saveItem();
